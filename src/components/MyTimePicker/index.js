@@ -1,25 +1,25 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { Icon } from 'react-native-elements';
+import { StyleSheet, Text, TouchableOpacity, View, TextInput } from 'react-native';
+import {Icon } from 'react-native-elements';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { Color, colors } from '../../utils/colors';
-import { fonts } from '../../utils/fonts';
+import { colors } from '../../utils';
+
 
 export default function MyTimePicker({
   label,
-  iconname = 'time',
-  onTimeChange,
+  iconname = 'time-outline', // Ikon yang sesuai
+  onTimeChange = () => {}, // Fallback fungsi
   value,
-  borderColor = Color.blueGray[300],
 }) {
   const [show, setShow] = useState(false);
-  const [time, setTime] = useState(value || new Date());
+  const [time, setTime] = useState(value || null); // Default null jika tidak ada value
 
   const onChange = (event, selectedTime) => {
-    const currentTime = selectedTime || time;
     setShow(false);
-    setTime(currentTime);
-    onTimeChange(currentTime);
+    if (selectedTime) {
+      setTime(selectedTime);
+      onTimeChange(selectedTime);
+    }
   };
 
   const showTimepicker = () => {
@@ -27,36 +27,22 @@ export default function MyTimePicker({
   };
 
   return (
-    <View style={{}}>
-      <Text style={{
-        ...fonts.subheadline3,
-        color: colors.primary,
-        marginBottom: 8,
-      }}>{label}</Text>
-      <TouchableOpacity onPress={showTimepicker} style={{
-        height: 50,
-        flexDirection: 'row',
-        alignItems: 'center',
-        borderWidth: 1,
-        borderRadius: 8,
-        borderColor: borderColor,
-        backgroundColor: 'white',
-        paddingLeft: 12,
-      }}>
-        <Icon type='ionicon' name={iconname} color={Color.blueGray[300]} size={24} />
-        <Text style={{
-          ...fonts.body3,
-          flex: 1,
-          paddingLeft: 10,
-          color: Color.blueGray[900],
-        }}>
-          {time ? time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Pilih Waktu'}
-        </Text>
+    <View style={styles.container}>
+      {label && <Text style={styles.label}>{label}</Text>}
+      <TouchableOpacity onPress={showTimepicker} style={styles.timePicker}>
+        <TextInput
+          style={styles.timeText}
+          editable={false}
+          placeholder="Pilih Waktu"
+          placeholderTextColor="#A0A0A0" // Warna placeholder abu-abu terang
+          value={time ? time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}
+        />
+        <Icon type="ionicon" name={iconname} color="#A0A0A0" size={24} />
       </TouchableOpacity>
       {show && (
         <DateTimePicker
           testID="timePicker"
-          value={time}
+          value={time || new Date()}
           mode="time"
           is24Hour={true}
           display="default"
@@ -67,4 +53,31 @@ export default function MyTimePicker({
   );
 }
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  container: {
+    marginBottom: 10,
+    marginTop:10
+
+  },
+  label: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: colors.primary,
+    marginBottom: 8,
+  },
+  timePicker: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderRadius: 8, // Sudut membulat
+    borderColor: '#D3D3D3', // Border abu-abu terang
+    backgroundColor: '#FFFFFF',
+    paddingHorizontal: 12,
+    height: 50,
+  },
+  timeText: {
+    flex: 1,
+    fontSize: 16,
+    color: '#000',
+  },
+});

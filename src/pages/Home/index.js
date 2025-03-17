@@ -52,7 +52,7 @@ export default function Home({ navigation, route }) {
 
   return (
     <ImageBackground
-      source={require('../../assets/homebg.png')}
+      source={require('../../assets/bghome.png')}
       style={{
         flex: 1,
         backgroundColor: colors.white,
@@ -60,7 +60,7 @@ export default function Home({ navigation, route }) {
         height: '100%',
       }}
     >
-      <ScrollView>
+    
         <View style={{ padding: 10 }}>
           {/* Sambutan & nama */}
 
@@ -86,7 +86,7 @@ export default function Home({ navigation, route }) {
 
           <View>
             <Image source={require('../../assets/logohome.png')} style={{
-              width:59,
+              width:57,
               height:55,
             }}/>
           </View>
@@ -97,7 +97,7 @@ export default function Home({ navigation, route }) {
           {/* MENU */}
           <View style={{
             padding:10,
-            marginTop:30
+            marginTop:50
             
           }}>
 
@@ -259,7 +259,7 @@ export default function Home({ navigation, route }) {
           </View>
        
         </View>
-      </ScrollView>
+ 
     </ImageBackground>
   );
 }

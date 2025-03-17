@@ -85,7 +85,7 @@ export default function Login({navigation}) {
 
         <View>
             <Image source={require('../../assets/logo.png')} style={{
-            width:232,
+            width:227,
             height:294,
             marginTop:20,
             alignSelf:'center',

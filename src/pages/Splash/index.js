@@ -37,6 +37,9 @@ export default function Splash({ navigation }) {
       })
     ]).start();
 
+    // Jika user biasa nanti lansung aja masuk ke home mainapp
+    // kalau pengawas,guru kepsek nanti masuk ke login
+
   
     setTimeout(() => {
       navigation.replace("Login");

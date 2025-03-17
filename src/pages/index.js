@@ -19,10 +19,17 @@ import Regulasi from './Menu/regulasi';
 import ProfilPengawas from './Menu/pengawas';
 import Diskusi from './Menu/diskusi';
 import PilihPengawas from './Menu/pilih';
-
-
-
-
+import AgendaPengawas from './Menu/agenda';
+import Meeting from './Menu/meeting';
+import Pengumuman from './Menu/pengumuman';
+import PengumumanDetail from './Menu/pengumumandetail';
+import TanyaPengawas from './Menu/tanyapengawas';
+import HomePengawas from './HomePengawas';
+import ProfileGuru from './Menu/profileguru';
+import BukuKunjungan from './Menu/bukukunjungan';
+import TambahBukuKunjungan from './Menu/kunjuganadd';
+import MeetingPengawas from './Menu/meetingpengawas';
+import TambahMeeting from './Menu/tambahmeeting';
 
 
 export {
@@ -47,10 +54,17 @@ export {
   ProfilPengawas,
   Diskusi,
   PilihPengawas,
-  
-
-
-
+AgendaPengawas,
+Meeting,
+Pengumuman,
+PengumumanDetail,
+TanyaPengawas,
+HomePengawas,
+ProfileGuru,
+BukuKunjungan,
+TambahBukuKunjungan,
+MeetingPengawas,
+TambahMeeting,
 
 
 

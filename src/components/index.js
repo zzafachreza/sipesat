@@ -14,10 +14,14 @@ import MyImageUpload from './MyImageUpload';
 import MyTimePicker from './MyTimePicker';
 import MyFileUploader from './MyFileUpload';
 import FileUpload from './FileUpload';
+import CalendarView from './calendarview';
+import GuruBottomNavigator from './BottomNavigator/bottomguru';
+import PengawasBottomNavigator from './BottomNavigator/bottompengawas';
+import Dokumentasi from './Dokumentasi';
 
 
 
 
 export { MyGap, MyButton, MyInput, MyHeader, MyPicker, MyCalendar, BottomNavigator, 
     MyRadio,MyInputSecond,MyButtonSecond ,MyCalendarSecond, MyInputLogin,MyImageUpload,
-     MyTimePicker,MyFileUploader, FileUpload};
+     MyTimePicker,MyFileUploader, FileUpload, CalendarView, GuruBottomNavigator, PengawasBottomNavigator, Dokumentasi};

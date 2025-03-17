@@ -46,7 +46,7 @@ export default function MyInput({
         flexDirection: 'row', // Gunakan row agar TextInput dan label bisa sejajar
         alignItems: 'center', // Align center agar teks sejajar vertikal
         borderWidth: 1,
-        borderRadius: 30,
+        borderRadius: 50,
         borderColor: borderColor,
         backgroundColor: 'white',
       }}>

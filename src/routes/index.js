@@ -74,6 +74,16 @@ import {
   ProfilPengawas,
   Diskusi,
   PilihPengawas,
+  AgendaPengawas,
+  Meeting,
+  PengumumanDetail,
+  TanyaPengawas,
+  HomePengawas,
+  ProfileGuru,
+  BukuKunjungan,
+  TambahBukuKunjungan,
+  MeetingPengawas,
+  TambahMeeting,
 
 
 
@@ -81,8 +91,11 @@ import {
 import { colors } from '../utils';
 import { Icon } from 'react-native-elements';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { BottomNavigator } from '../components';
+import { BottomNavigator, GuruBottomNavigator, PengawasBottomNavigator } from '../components';
 import HomeGuru from '../pages/HomeGuru';
+import PendampinganKomunitas from '../pages/Menu/pendemping';
+import PedampinganDetail from '../pages/Menu/pendampingdetail';
+import Pengumuman from '../pages/Menu/pengumuman';
 
 
 
@@ -92,7 +105,7 @@ const Stack = createStackNavigator();
 
 const MainApp = () => {
   return (
-    <Tab.Navigator initialRouteName='Produk' tabBar={props => <BottomNavigator {...props} />}>
+    <Tab.Navigator initialRouteName='Home' tabBar={props => <BottomNavigator {...props} />}>
       <Tab.Screen name="Home" component={Home} />
       <Tab.Screen name="Profile" component={Account} />
 
@@ -102,8 +115,21 @@ const MainApp = () => {
 
 const GuruMainApp = () => {
   return (
-    <Tab.Navigator initialRouteName='Produk' tabBar={props => <BottomNavigator {...props} />}>
+    <Tab.Navigator initialRouteName='HomeGuru' tabBar={props => <GuruBottomNavigator {...props} />}>
+      <Tab.Screen name="Home" component={Home} />
       <Tab.Screen name="HomeGuru" component={HomeGuru} />
+      <Tab.Screen name="TanyaPengawas" component={TanyaPengawas} />
+      <Tab.Screen name="Profile" component={Account} />
+
+    </Tab.Navigator>
+  );
+};
+
+const PengawasMainApp = () => {
+  return (
+    <Tab.Navigator initialRouteName='HomePengawas' tabBar={props => <PengawasBottomNavigator {...props} />}>
+      <Tab.Screen name="Home" component={Home} />
+      <Tab.Screen name="HomePengawas" component={HomePengawas} />
       <Tab.Screen name="Profile" component={Account} />
 
     </Tab.Navigator>
@@ -111,9 +137,11 @@ const GuruMainApp = () => {
 };
 
 
+
+
 export default function Router() {
   return (
-    <Stack.Navigator initialRouteName='GuruMainApp'>
+    <Stack.Navigator initialRouteName='MainApp'>
       <Stack.Screen
         name="Splash"
         component={Splash}
@@ -121,6 +149,26 @@ export default function Router() {
           headerShown: false,
         }}
       />
+
+<Stack.Screen
+        name="MeetingPengawas"
+        component={MeetingPengawas}
+        options={{
+          headerShown: false,
+
+        }}
+      />
+
+<Stack.Screen
+        name="TambahMeeting"
+        component={TambahMeeting}
+        options={{
+          headerShown: false,
+
+        }}
+      />
+
+
 
 
 
@@ -132,6 +180,37 @@ export default function Router() {
 
         }}
       />
+
+<Stack.Screen
+        name="BukuKunjugan"
+        component={BukuKunjungan}
+        options={{
+          headerShown: false,
+
+        }}
+      />
+
+<Stack.Screen
+        name="TambahBukuKunjungan"
+        component={TambahBukuKunjungan}
+        options={{
+          headerShown: false,
+
+        }}
+      />
+
+
+
+
+<Stack.Screen
+        name="PengawasMainApp"
+        component={PengawasMainApp}
+        options={{
+          headerShown: false,
+
+        }}
+      />
+
 
 
 
@@ -201,6 +280,93 @@ export default function Router() {
 
         }}
       />
+
+
+<Stack.Screen
+        name="AgendaPengawas"
+        component={AgendaPengawas}
+        options={{
+          headerShown: false,
+
+        }}
+      />
+
+
+<Stack.Screen
+        name="PedampinganKomunitas"
+        component={PendampinganKomunitas}
+        options={{
+          headerShown: false,
+
+        }}
+      />
+
+
+<Stack.Screen
+        name="Meeting"
+        component={Meeting}
+        options={{
+          headerShown: false,
+
+        }}
+      />
+
+<Stack.Screen
+        name="Pengumuman"
+        component={Pengumuman}
+        options={{
+          headerShown: false,
+
+        }}
+      />
+
+      
+<Stack.Screen
+        name="PengumumanDetail"
+        component={PengumumanDetail}
+        options={{
+          headerShown: false,
+
+        }}
+      />
+
+
+
+
+
+      
+<Stack.Screen
+        name="PedampinganDetail"
+        component={PedampinganDetail}
+        options={{
+          headerShown: false,
+
+        }}
+      />
+
+
+<Stack.Screen
+        name="TanyaPengawas"
+        component={TanyaPengawas}
+        options={{
+          headerShown: false,
+
+        }}
+      />
+
+<Stack.Screen
+        name="ProfileGuru"
+        component={ProfileGuru}
+        options={{
+          headerShown: false,
+
+        }}
+      />
+
+
+
+
+
 
 <Stack.Screen
         name="Login"

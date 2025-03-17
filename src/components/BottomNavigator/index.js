@@ -43,7 +43,7 @@ export default function BottomNavigator({ state, descriptors, navigation }) {
 
     <View style={{
       padding:10,
-      marginTop:-85
+      marginTop:0
     }}>
     <View
       style={{
