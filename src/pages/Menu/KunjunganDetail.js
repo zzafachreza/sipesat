@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { colors, fonts, windowWidth } from '../../utils'
 import { MyButton, MyHeader } from '../../components'
 import axios from 'axios';
-import { apiURL, getData, MYAPP, webURL } from '../../utils/localStorage';
+import { apiURL, MYAPP, webURL } from '../../utils/localStorage';
 import RenderHTML from 'react-native-render-html';
 import { showMessage } from 'react-native-flash-message';
 import moment from 'moment';
@@ -12,7 +12,7 @@ import RNFS from 'react-native-fs';
 import Share from 'react-native-share';
 
 
-export default function PedampinganDetail({ navigation, route }) {
+export default function KunjunganDetail({ navigation, route }) {
     const item = route.params;
     console.log(item);
 
@@ -77,19 +77,19 @@ export default function PedampinganDetail({ navigation, route }) {
         </p>
         
         <div class="row">
-            <p class="label">Nama Komunitas Belajar</p>
+            <p class="label">Nama Satuan Pendidikan</p>
             <p class="separator">:</p>
-            <p class="value">${item.nama}</p>
+            <p class="value">${item.satuan}</p>
         </div>
 
         <div class="row">
-            <p class="label">Waktu Pendampingan</p>
+            <p class="label">Waktu Kunjungan</p>
             <p class="separator">:</p>
             <p class="value">${item.tanggal}</p>
         </div>
 
         <div class="row">
-            <p class="label">Tujuan Pendampingan</p>
+            <p class="label">Tujuan Kunjungan</p>
             <p class="separator">:</p>
             <p class="value">${item.tujuan}}</p>
         </div>
@@ -123,17 +123,13 @@ export default function PedampinganDetail({ navigation, route }) {
         alert(file.filePath);
     }
 
-    const [user, setUser] = useState({});
-    useEffect(() => {
-        getData('user').then(res => setUser(res));
-    }, [])
 
     return (
         <View style={{
             flex: 1,
             backgroundColor: colors.white
         }}>
-            <MyHeader title="Pendampingan Komunitas Belajar Detail" />
+            <MyHeader title="Kunjungan Detail" />
             <ScrollView>
                 <View style={{
                     margin: 10,
@@ -163,7 +159,7 @@ export default function PedampinganDetail({ navigation, route }) {
                             fontFamily: fonts.primary[500], fontSize: 10, color: colors.primary
                         }}>:</Text>
                         <Text style={{ flex: 1, fontFamily: fonts.primary[500], fontSize: 10, color: colors.primary }}>
-                            {item.nama}
+                            {item.satuan}
                         </Text>
                     </View>
 
@@ -171,7 +167,7 @@ export default function PedampinganDetail({ navigation, route }) {
 
                     <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 5, }}>
                         <Text style={{ flex: 1, fontFamily: fonts.primary[500], fontSize: 10, color: colors.text, width: '40%' }}>
-                            Waktu Pendampingan
+                            Waktu Kunjungan
                         </Text>
                         <Text style={{
                             flex: 0.1,
@@ -184,7 +180,7 @@ export default function PedampinganDetail({ navigation, route }) {
 
                     <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 5, }}>
                         <Text style={{ flex: 1, fontFamily: fonts.primary[500], fontSize: 10, color: colors.text, width: '40%' }}>
-                            Tujuan Pendampingan
+                            Tujuan Kunjungan
                         </Text>
                         <Text style={{
                             flex: 0.1,
@@ -228,48 +224,46 @@ export default function PedampinganDetail({ navigation, route }) {
 
                 </View>
             </ScrollView>
-            {user.role == 'Pengawas Sekolah' &&
+            <View style={{
+                padding: 10,
+                flexDirection: 'row'
+            }}>
                 <View style={{
-                    padding: 10,
-                    flexDirection: 'row'
+                    flex: 1
                 }}>
-                    <View style={{
-                        flex: 1
-                    }}>
-                        <MyButton title="Edit" onPress={() => navigation.navigate('ShowWeb', {
-                            link: webURL + 'pendampingan/edit/' + item.id_pendampingan,
-                            judul: 'Edit Pendampingan'
-                        })} />
-                    </View>
-                    <View style={{
-                        flex: 1
-                    }}>
-                        <MyButton title="Hapus" onPress={() => Alert.alert(MYAPP, 'Apakah kamu yakin akan hapus ini ?', [
-                            {
-                                text: 'TIDAK'
-                            },
-                            {
-                                text: 'HAPUS',
-                                onPress: () => {
-                                    axios.post(apiURL + 'delete_data', {
-                                        modul: 'pendampingan',
-                                        id: item.id_pendampingan,
-                                    }).then(res => {
-                                        if (res.data.status == 200) {
-                                            showMessage({
-                                                type: 'success',
-                                                message: res.data.message
-                                            });
-                                            navigation.goBack();
-                                        }
-                                        console.log(res.data);
-                                    })
-                                }
-                            }
-                        ])} warna={colors.danger} />
-                    </View>
+                    <MyButton title="Edit" onPress={() => navigation.navigate('ShowWeb', {
+                        link: webURL + 'kunjungan/edit/' + item.id_kunjungan,
+                        judul: 'Edit Kunjungan'
+                    })} />
                 </View>
-            }
+                <View style={{
+                    flex: 1
+                }}>
+                    <MyButton title="Hapus" onPress={() => Alert.alert(MYAPP, 'Apakah kamu yakin akan hapus ini ?', [
+                        {
+                            text: 'TIDAK'
+                        },
+                        {
+                            text: 'HAPUS',
+                            onPress: () => {
+                                axios.post(apiURL + 'delete_data', {
+                                    modul: 'kunjungan',
+                                    id: item.id_kunjungan,
+                                }).then(res => {
+                                    if (res.data.status == 200) {
+                                        showMessage({
+                                            type: 'success',
+                                            message: res.data.message
+                                        });
+                                        navigation.goBack();
+                                    }
+                                    console.log(res.data);
+                                })
+                            }
+                        }
+                    ])} warna={colors.danger} />
+                </View>
+            </View>
         </View>
     )
 }

@@ -1,43 +1,70 @@
 import { View, Text, ScrollView } from 'react-native'
-import React from 'react'
-import { colors, fonts } from '../../utils'
+import React, { useEffect, useState } from 'react'
+import { colors, fonts, windowWidth } from '../../utils'
 import { MyHeader } from '../../components'
+import axios from 'axios';
+import { apiURL } from '../../utils/localStorage';
+import RenderHTML from 'react-native-render-html';
 
-export default function InfoAplikasi({navigation}) {
+export default function InfoAplikasi({ navigation }) {
+
+  const [comp, setComp] = useState({});
+
+  useEffect(() => {
+    axios.post(apiURL + 'company').then(res => {
+      console.log(res.data[0]);
+      setComp(res.data[0]);
+    })
+  }, [])
   return (
     <View style={{
-        flex:1,
-        backgroundColor:colors.white
+      flex: 1,
+      backgroundColor: colors.white
     }}>
-      <MyHeader title="Info Aplikasi"/>
+      <MyHeader title="Info Aplikasi" />
 
       <ScrollView>
         <View style={{
-            padding:10,
+          padding: 10,
         }}>
 
-            <Text style={{
-                fontFamily:fonts.primary[600],
-                textAlign:"center",
-                color:colors.primary,
-                fontSize:20,
-                marginTop:20
-            }}>Si Pesat</Text>
+          <Text style={{
+            fontFamily: fonts.primary[600],
+            textAlign: "center",
+            color: colors.primary,
+            fontSize: 20,
+            marginTop: 20
+          }}>{comp.nama}</Text>
 
-            <View style={{
-                padding:10
-            }}>
-                <Text style={{
-                    fontFamily:fonts.primary[500],
-                    fontSize:15,
-                    textAlign:'justify',
-                }}>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-                {'\n'}
-                {'\n'}
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-                </Text>
-            </View>
+          <View style={{
+            padding: 10
+          }}>
+            <RenderHTML
+
+              tagsStyles={{
+                div: {
+                  fontFamily: fonts.body3.fontFamily,
+                  fontSize: 12,
+                  textAlign: 'justify',
+                  lineHeight: 20,
+                  color: colors.black,
+                },
+                p: {
+                  fontFamily: fonts.body3.fontFamily,
+                  fontSize: 12,
+                  textAlign: 'justify',
+                  lineHeight: 20,
+                  color: colors.black,
+                },
+
+              }}
+              systemFonts={[fonts.body3.fontFamily]}
+              contentWidth={windowWidth}
+              source={{
+                html: comp.deskripsi
+              }}
+            />
+          </View>
 
         </View>
       </ScrollView>

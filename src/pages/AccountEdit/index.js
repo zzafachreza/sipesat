@@ -11,7 +11,7 @@ import {
     ScrollView,
 } from 'react-native';
 import { windowWidth, fonts } from '../../utils/fonts';
-import { apiURL, getData, MYAPP, storeData, urlAPI, urlApp, urlAvatar } from '../../utils/localStorage';
+import { apiURL, getData, MYAPP, storeData, urlAPI, urlApp, urlAvatar, webURL } from '../../utils/localStorage';
 import { Color, colors } from '../../utils/colors';
 import { MyButton, MyCalendar, MyGap, MyHeader, MyInput, MyPicker } from '../../components';
 import { Icon } from 'react-native-elements';
@@ -29,8 +29,9 @@ export default function AccountEdit({ navigation, route }) {
     const [kirim, setKirim] = useState(route.params);
     const [loading, setLoading] = useState(false);
     const sendServer = () => {
-        setLoading(true);
+
         console.log(kirim);
+        // setLoading(true);
         axios.post(apiURL + 'update_profile', kirim).then(res => {
             console.log(res.data)
 
@@ -53,7 +54,75 @@ export default function AccountEdit({ navigation, route }) {
         })
     }
 
+    const [PROVINSI, setPROVINSI] = useState([]);
+    const [KOTA, setKOTA] = useState([]);
+    const [KECAMATAN, setKECAMATAN] = useState([]);
+    const [KELURAHAN, setKELURAHAN] = useState([]);
+
+    const getProvinsi = () => {
+        axios.get('https://ibnux.github.io/data-indonesia/provinsi.json').then(res => {
+            let tmp = [];
+            res.data.map(i => {
+                tmp.push({
+                    value: i.id + '#' + i.nama,
+                    label: i.nama
+                })
+            })
+            console.log(tmp);
+            setPROVINSI(tmp);
+        })
+    }
+
+    const getKotaKabupaten = (id_provinsi) => {
+        axios.get(`https://ibnux.github.io/data-indonesia/kota/${id_provinsi}.json`).then(res => {
+            let tmp = [];
+            res.data.map(i => {
+                tmp.push({
+                    value: i.id + '#' + i.nama,
+                    label: i.nama
+                })
+            })
+            console.log(tmp);
+            setKOTA(tmp);
+        })
+    }
+
+    const getKecamatan = (id_kota) => {
+        axios.get(`https://ibnux.github.io/data-indonesia/kecamatan/${id_kota}.json`).then(res => {
+            let tmp = [];
+            res.data.map(i => {
+                tmp.push({
+                    value: i.id + '#' + i.nama,
+                    label: i.nama
+                })
+            })
+            console.log(tmp);
+            setKECAMATAN(tmp);
+        })
+    }
+
+    const getKelurahan = (id_kecamatan) => {
+        axios.get(`https://ibnux.github.io/data-indonesia/kelurahan/${id_kecamatan}.json`).then(res => {
+            let tmp = [];
+            res.data.map(i => {
+                tmp.push({
+                    value: i.id + '#' + i.nama,
+                    label: i.nama
+                })
+            })
+            console.log(tmp);
+            setKELURAHAN(tmp);
+        })
+    }
+
+
+    const handleChange = (key, value) => {
+        setKirim({ ...kirim, [key]: value });
+    };
+
+
     useEffect(() => {
+        getProvinsi();
         setKirim({
             ...kirim,
             newfoto_user: null,
@@ -85,11 +154,11 @@ export default function AccountEdit({ navigation, route }) {
                             maxWidth: 200,
                             maxHeight: 200
                         }, response => {
-                            // console.log('All Response = ', response);
+                            console.log('All Response = ', response);
 
                             setKirim({
                                 ...kirim,
-                                newfoto_user: `data:${response.type};base64, ${response.base64}`,
+                                newfoto_user: `data:${response.assets[0].type};base64, ${response.assets[0].base64}`,
                             });
                         });
 
@@ -109,37 +178,124 @@ export default function AccountEdit({ navigation, route }) {
                             width: 100,
                             height: 100,
                         }} source={{
-                            uri: kirim.newfoto_user !== null ? kirim.newfoto_user : kirim.foto_user,
+                            uri: kirim.newfoto_user !== null ? kirim.newfoto_user : webURL + kirim.foto_user,
                         }} />
                     </TouchableOpacity>
                 </View>
 
+                <MyInput
+                    label="Nama Lengkap"
+                    placeholder="Isi Nama Lengkap"
+                    colorlabel={colors.primary}
+                    value={kirim.nama_lengkap}
+                    onChangeText={(x) => handleChange('nama_lengkap', x)}
+                />
+                <MyInput
+                    label="Username"
+                    placeholder="Isi Username"
+                    colorlabel={colors.primary}
+                    value={kirim.username}
+                    onChangeText={(x) => handleChange('username', x)}
+                />
+                <MyInput
+                    label="NIP"
+                    placeholder="Isi NIP"
+                    colorlabel={colors.primary}
+                    value={kirim.nip}
+                    onChangeText={(x) => handleChange('nip', x)}
+                />
+                <MyInput
+                    label="Unit Kerja"
+                    placeholder="Isi Unit Kerja"
+                    colorlabel={colors.primary}
+                    value={kirim.unit_kerja}
+                    onChangeText={(x) => handleChange('unit_kerja', x)}
+                />
 
+                <View style={{ marginTop: 15 }}>
+                    <Text
+                        style={{
+                            fontFamily: fonts.primary[600],
+                            fontSize: 15,
+                            color: colors.primary,
+                        }}
+                    >
+                        Alamat Unit Kerja
+                    </Text>
+                    <View style={{ padding: 10 }}>
+                        <MyPicker
+                            label="Provinsi"
+                            data={PROVINSI}
+                            selectedValue={kirim.provinsi}
+                            onChangeText={(x) => {
+                                setKirim({
+                                    ...kirim,
+                                    provinsi: x.split("#")[1],
+                                    kode_provinsi: x.split("#")[0]
+                                })
+                                getKotaKabupaten(x.split("#")[0]);
+                            }}
+                        />
+                        <MyPicker
+                            label="Kota/Kabupaten"
+                            data={KOTA}
+                            selectedValue={kirim.kota_kabupaten}
+                            onChangeText={(x) => {
 
-                <MyInput label="Username" iconname="at-outline" value={kirim.username} onChangeText={x => setKirim({ ...kirim, username: x })} />
-                <MyGap jarak={20} />
-                <MyInput label="Nama Lengkap" iconname="person-outline" value={kirim.nama_lengkap} onChangeText={x => setKirim({ ...kirim, nama_lengkap: x })} />
-                <MyGap jarak={20} />
-                <MyInput label="Nomor Telepon" iconname="call-outline" keyboardType='phone-pad' value={kirim.telepon} onChangeText={x => setKirim({ ...kirim, telepon: x })} />
-                <MyGap jarak={20} />
-                <MyPicker value={kirim.jenis_kelamin} label="Jenis Kelamin" iconname="male-female-outline" data={[
-                    { label: 'Laki-laki', value: 'Laki-laki' },
-                    { label: 'Perempuan', value: 'Perempuan' },
-                ]}
-                    onValueChange={x => {
-                        setKirim({
-                            ...kirim,
-                            jenis_kelamin: x
-                        })
-                    }} />
-                <MyGap jarak={20} />
+                                setKirim({
+                                    ...kirim,
+                                    kota_kabupaten: x.split("#")[1],
+                                    kode_kota_kabupaten: x.split("#")[0]
+                                })
 
-                <MyCalendar label={'Tanggal Lahir ( ' + moment().diff(kirim.tanggal_lahir, 'years') + ' Tahun )'} onDateChange={x => {
-                    setKirim({
-                        ...kirim,
-                        tanggal_lahir: x
-                    })
-                }} value={kirim.tanggal_lahir} />
+                                getKecamatan(x.split("#")[0]);
+                            }}
+                        />
+                        <MyPicker
+                            label="Kecamatan"
+                            data={KECAMATAN}
+                            selectedValue={kirim.kecamatan}
+                            onChangeText={(x) => {
+                                setKirim({
+                                    ...kirim,
+                                    kecamatan: x.split("#")[1],
+                                    kode_kecamatan: x.split("#")[0]
+                                })
+
+                                getKelurahan(x.split("#")[0])
+                            }}
+                        />
+                        <MyPicker
+                            label="Kelurahan"
+                            data={KELURAHAN}
+                            selectedValue={kirim.kelurahan}
+                            onChangeText={(x) => {
+                                setKirim({
+                                    ...kirim,
+                                    kelurahan: x.split("#")[1],
+                                    kode_kelurahan: x.split("#")[0]
+                                })
+                            }}
+                        />
+                    </View>
+                </View>
+
+                <MyInput
+                    label="Nomor Telepon"
+                    keyboardType="phone-pad"
+                    placeholder="Isi Nomor Telepon"
+                    colorlabel={colors.primary}
+                    value={kirim.telepon}
+                    onChangeText={(x) => handleChange('telepon', x)}
+                />
+                <MyInput
+                    label="Email"
+                    placeholder="Isi Email"
+                    colorlabel={colors.primary}
+                    value={kirim.email}
+                    onChangeText={(x) => handleChange('email', x)}
+                />
+
 
                 <MyGap jarak={20} />
                 <MyInput label="Password" iconname="lock-closed-outline" secureTextEntry={true} onChangeText={x => setKirim({ ...kirim, newpassword: x })} placeholder="Kosongkan jika tidak diubah" />

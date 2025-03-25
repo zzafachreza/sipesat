@@ -1,128 +1,204 @@
-import { View, Text, ScrollView, StyleSheet, Image } from 'react-native';
+import { View, Text, ScrollView, Image, FlatList, Pressable } from 'react-native';
 import React, { useEffect, useState } from 'react';
-import { colors } from '../../utils';
-import { MyHeader } from '../../components';
+import { Color, colors, fonts } from '../../utils';
+import { MyButton, MyHeader } from '../../components';
+import axios from 'axios';
+import { apiURL, webURL } from '../../utils/localStorage';
+import { Icon } from 'react-native-elements';
 
-export default function ProfileGuru({ navigation }) {
-  const [dataGuru, setDataGuru] = useState([]);
+export default function ProfileGuru({ navigation, route }) {
+  const user = route.params;
 
-  // Contoh data dari database (bisa diganti dengan data dari API)
-  const fetchData = () => {
-    const data = [
-      {
-        nama: 'Indah Permata Sari',
-        nip: '53756463268',
-        unitKerja: 'Unit Kerja Citarum',
-        alamat: 'Bandung Wetan, Citarum, Kota Bandung, Jawa Barat',
-        nomorTelepon: '081237673832',
-        email: 'indahps@gmail.com',
-    
-      },
-      // Tambahkan data lain jika ada
-    ];
-    setDataGuru(data);
-  };
-
+  const [data, setData] = useState([]);
   useEffect(() => {
-    fetchData(); // Fetch data saat komponen dimount
+    getPengawas()
   }, []);
 
+  const getPengawas = () => {
+    axios.post(apiURL + 'pengawas3', {
+      fid_pengawas: user.id_pengguna
+    }).then(res => {
+      console.log(res.data);
+      setData(res.data);
+    })
+  }
+
+  const updateStatus = (x, y) => {
+    let kirim = {
+      id_cek: x,
+      status: y
+    }
+
+    axios.post(apiURL + 'pilih_cek', kirim).then(res => {
+      console.log(res.data);
+      if (res.data.status == 200) {
+        getPengawas();
+      }
+    })
+
+    console.log(kirim);
+  }
   return (
-    <View style={{ flex: 1, backgroundColor: colors.white }}>
-      <MyHeader title="Profil Kepala Sekolah/Guru" />
+    <View style={{
+      flex: 1,
+      backgroundColor: colors.white
+    }}>
+      <MyHeader title="Profile Kepala Sekolah / Guru" />
 
-      <ScrollView>
-        <View style={{ padding: 10 }}>
-          {dataGuru.map((guru, index) => (
-            <View key={index} style={styles.card}>
-              {/* Foto dan Detail */}
-              <View style={{ flexDirection: 'row' }}>
-                {/* Foto */}
-                <Image
-                  source={require('../../assets/guru_dummy.png')}
-                  style={styles.foto}
-                />
+      <FlatList data={data} renderItem={({ item, index }) => {
+        return (
+          <View style={{
+            padding: 10,
+            alignContent: 'center',
+            alignItems: "center"
+          }}>
 
-                {/* Detail */}
-                <View style={{ flex: 1, marginLeft: 10 }}>
-                  {/* Nama KS/Guru */}
-                  <View style={styles.row}>
-                    <Text style={styles.label}>Nama KS/Guru</Text>
-                    <Text style={styles.value}>: {guru.nama}</Text>
-                  </View>
+            <View style={{
+              padding: 10,
+              borderColor: Color.blueGray[300],
+              borderWidth: 1,
+              borderRadius: 10,
+              flexDirection: 'row',
+              justifyContent: 'flex-start',
+              height: 'auto', // Ubah height ke 'auto' agar card menyesuaikan konten
+              // alignItems: "center"
+            }}>
 
-                  {/* NIP */}
-                  <View style={styles.row}>
-                    <Text style={styles.label}>NIP</Text>
-                    <Text style={styles.value}>: {guru.nip}</Text>
-                  </View>
+              <View>
+                <Image style={{
+                  width: 100,
+                  height: 100,
+                  resizeMode: 'contain'
+                }} source={{
+                  uri: webURL + item.foto_user
+                }} />
+              </View>
 
-                  {/* Unit Kerja */}
-                  <View style={styles.row}>
-                    <Text style={styles.label}>Unit Kerja</Text>
-                    <Text style={styles.value}>: {guru.unitKerja}</Text>
-                  </View>
-
-                  {/* Alamat */}
-                  <View style={styles.row}>
-                    <Text style={styles.label}>Alamat</Text>
-                    <Text style={styles.value}>: {guru.alamat}</Text>
-                  </View>
-
-                  {/* Nomor Telepon */}
-                  <View style={styles.row}>
-                    <Text style={styles.label}>Nomor Telepon</Text>
-                    <Text style={styles.value}>: {guru.nomorTelepon}</Text>
-                  </View>
-
-                  {/* Email */}
-                  <View style={styles.row}>
-                    <Text style={styles.label}>Email</Text>
-                    <Text style={styles.value}>: {guru.email}</Text>
-                  </View>
+              <View style={{ marginLeft: 10, flex: 1 }}>
+                <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 5 }}>
+                  <Text style={{ fontFamily: fonts.secondary[600], fontSize: 10, width: 80 }}>Nama</Text>
+                  <Text style={{ fontFamily: fonts.secondary[600], fontSize: 10, marginHorizontal: 5 }}>:</Text>
+                  <Text style={{ fontFamily: fonts.secondary[600], fontSize: 10, color: colors.secondary, flexShrink: 1 }}>{item.nama_lengkap}</Text>
                 </View>
+
+                <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 5 }}>
+                  <Text style={{ fontFamily: fonts.secondary[600], fontSize: 10, width: 80 }}>NIP</Text>
+                  <Text style={{ fontFamily: fonts.secondary[600], fontSize: 10, marginHorizontal: 5 }}>:</Text>
+                  <Text style={{ fontFamily: fonts.secondary[600], fontSize: 10, color: colors.secondary, flexShrink: 1 }}>{item.nip}</Text>
+                </View>
+
+                <View style={{ flexDirection: "row", marginBottom: 5 }}>
+                  <Text style={{ fontFamily: fonts.secondary[600], fontSize: 10, width: 80 }}>Unit Kerja</Text>
+                  <Text style={{ fontFamily: fonts.secondary[600], fontSize: 10, marginHorizontal: 5 }}>:</Text>
+                  <Text style={{ fontFamily: fonts.secondary[600], fontSize: 10, color: colors.secondary, flexShrink: 1 }}>{item.unit_kerja}</Text>
+                </View>
+
+                <View style={{ flexDirection: "row", marginBottom: 5 }}>
+                  <Text style={{ fontFamily: fonts.secondary[600], fontSize: 10, width: 80 }}>Alamat</Text>
+                  <Text style={{ fontFamily: fonts.secondary[600], fontSize: 10, marginHorizontal: 5 }}>:</Text>
+                  <Text style={{ fontFamily: fonts.secondary[600], fontSize: 10, color: colors.secondary, flexShrink: 1, flexWrap: 'wrap' }}>
+                    {item.kelurahan}, {item.kecamatan}, {item.kota_kabupaten}, {item.provinsi}
+                  </Text>
+                </View>
+
+                <View style={{ flexDirection: "row", marginBottom: 5 }}>
+                  <Text style={{ fontFamily: fonts.secondary[600], fontSize: 10, width: 80 }}>Telepon</Text>
+                  <Text style={{ fontFamily: fonts.secondary[600], fontSize: 10, marginHorizontal: 5 }}>:</Text>
+                  <Text style={{ fontFamily: fonts.secondary[600], fontSize: 10, color: colors.secondary, flexShrink: 1 }}>0897865657858</Text>
+                </View>
+
+                <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 5 }}>
+                  <Text style={{ fontFamily: fonts.secondary[600], fontSize: 10, width: 80 }}>Email</Text>
+                  <Text style={{ fontFamily: fonts.secondary[600], fontSize: 10, marginHorizontal: 5 }}>:</Text>
+                  <Text style={{ fontFamily: fonts.secondary[600], fontSize: 10, color: colors.secondary, flexShrink: 1, flexWrap: 'wrap' }}>
+                    {item.email}
+                  </Text>
+                </View>
+
+
+                {
+                  (item.status == "Menunggu Konfirmasi") &&
+                  <View style={{
+                    marginTop: 10,
+                    flexDirection: 'row',
+                    justifyContent: 'flex-start'
+                  }}>
+                    <Pressable onPress={() => updateStatus(item.id_cek, 'Approved')}>
+                      <View style={{
+                        marginRight: 10,
+                        width: 100,
+
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        borderWidth: 1,
+                        padding: 5,
+                        borderRadius: 10,
+                        borderColor: colors.success
+                      }}>
+                        <Icon type='ionicon' name='checkmark-circle' color={colors.success} />
+                        <Text style={{
+                          marginLeft: 5,
+                          fontFamily: fonts.secondary[600],
+                          fontSize: 10,
+                          color: colors.black
+                        }}>Approved</Text>
+                      </View>
+                    </Pressable>
+
+                    <Pressable onPress={() => updateStatus(item.id_cek, 'Decline')}>
+                      <View style={{
+                        width: 100,
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        borderWidth: 1,
+                        padding: 5,
+                        borderRadius: 10,
+                        borderColor: colors.danger
+                      }}>
+                        <Icon type='ionicon' name='close-circle' color={colors.danger} />
+                        <Text style={{
+                          marginLeft: 5,
+                          fontFamily: fonts.secondary[600],
+                          fontSize: 10,
+                          color: colors.black
+                        }}>Decline</Text>
+                      </View>
+                    </Pressable>
+                  </View>
+                }
+
+                {
+                  item.status == 'Approved' &&
+                  <Text style={{
+                    fontFamily: fonts.secondary[600],
+                    fontSize: 11,
+                    backgroundColor: colors.success,
+                    color: colors.white,
+                    textAlign: 'center',
+                    borderRadius: 10,
+                    padding: 4,
+                  }}>Approved</Text>
+                }
+
+                {
+                  item.status == 'Decline' &&
+                  <Text style={{
+                    fontFamily: fonts.secondary[600],
+                    fontSize: 11,
+                    backgroundColor: colors.danger,
+                    color: colors.white,
+                    textAlign: 'center',
+                    borderRadius: 10,
+                    padding: 4,
+                  }}>Decline</Text>
+                }
+
+
               </View>
             </View>
-          ))}
-        </View>
-      </ScrollView>
+          </View>
+        )
+      }} />
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  card: {
-    backgroundColor: colors.white,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: colors.border,
-    padding: 15,
-    marginBottom: 15,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  foto: {
-    width: 80,
-    height: 118,
-    borderRadius: 10, // Jika ingin foto memiliki sudut melengkung
-  },
-  row: {
-    flexDirection: 'row',
-    marginBottom: 10,
-  },
-  label: {
-    fontFamily: 'Poppins-SemiBold',
-    fontSize: 10,
-    color: colors.text,
-    width: '30%', // Lebar untuk label
-  },
-  value: {
-    fontFamily: 'Poppins-Regular',
-    fontSize: 10,
-    color: colors.text,
-    flex: 1, // Mengisi sisa ruang
-  },
-});

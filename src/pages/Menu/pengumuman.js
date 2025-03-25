@@ -1,90 +1,102 @@
-import { View, Text, ScrollView, TouchableNativeFeedback, Image } from 'react-native'
-import React from 'react'
-import { colors, fonts } from '../../utils'
+import { View, Text, ScrollView, TouchableNativeFeedback, Image, Pressable, FlatList } from 'react-native'
+import React, { useEffect, useState } from 'react'
+import { Color, colors, fonts, windowWidth } from '../../utils'
 import { MyHeader } from '../../components'
+import { Icon } from 'react-native-elements'
+import { apiURL, webURL } from '../../utils/localStorage'
+import axios from 'axios'
+import { useIsFocused } from '@react-navigation/native'
 
-export default function Pengumuman({navigation}) {
+export default function Pengumuman({ navigation, route }) {
+  const user = route.params;
+
+  const [data, setData] = useState([]);
+  const __getDataBaseAPI = () => {
+    axios.post(apiURL + 'pengumuman').then(res => {
+
+      setData(res.data);
+    })
+  }
+
+  const isFocused = useIsFocused();
+  useEffect(() => {
+    if (isFocused) {
+      __getDataBaseAPI();
+    }
+
+  }, [isFocused]);
+
+
   return (
     <View style={{
-        flex:1,
-        backgroundColor:colors.white
+      flex: 1,
+      backgroundColor: colors.white
     }}>
-        <MyHeader title="Pengumuman"/>
+      <MyHeader title="Pengumuman" />
+      <View style={{
+        flex: 1,
+        padding: 10,
+      }}>
 
+        <FlatList data={data} renderItem={({ item, index }) => {
+          return (
+            <Pressable onPress={() => navigation.navigate('PengumumanDetail', item)}>
+              <View style={{
+                marginBottom: 10,
 
-        <ScrollView>
+                overflow: 'hidden',
+                borderWidth: 1,
+                borderRadius: 10,
+                borderColor: Color.blueGray[400],
+              }}>
+                <Image style={{
+                  width: '100%',
+                  height: 220,
+                }} source={{
+                  uri: webURL + item.gambar
+                }} />
+                <View style={{
+                  padding: 10,
+                }}>
+                  <Text style={{
+                    fontFamily: fonts.secondary[600],
+                    fontSize: 16,
+                  }}>{item.judul}</Text>
+                  <Text style={{
+                    fontFamily: fonts.secondary[600],
+                    fontSize: 12,
+                    textAlign: 'right'
+                  }}>Selengkapnnya ></Text>
+                </View>
+              </View>
+
+            </Pressable>
+          )
+        }} />
+
+      </View>
+      <View>
+        {
+          user.role == 'Pengawas Sekolah' &&
+          <Pressable onPress={() => navigation.navigate('ShowWeb', {
+            link: webURL + 'pengumuman/add',
+            judul: 'Tambah Pengumuman'
+          })}>
             <View style={{
-                padding:10,
+              alignSelf: 'flex-end',
+              margin: 20,
+              width: 60,
+              height: 60,
+              backgroundColor: colors.primary,
+              borderRadius: 30,
+              justifyContent: 'center',
+              alignItems: 'center'
             }}>
-
-              <TouchableNativeFeedback onPress={() => navigation.navigate('PengumumanDetail')}>
-                    <View style={{
-                        borderWidth: 1,
-                        borderRadius: 20,
-                        position: 'relative', // Tambahkan ini untuk memungkinkan absolute positioning di dalamnya
-                        alignItems: 'center',
-                        justifyContent: 'center'
-                      }}>
-                        <Image 
-                          source={require('../../assets/pengumuman_dummy.png')} 
-                          style={{
-                            borderRadius: 20,
-                            width: 338, // Sesuaikan dengan ukuran gambar dummy
-                            height: 203, // Sesuaikan dengan ukuran gambar dummy
-                          }}
-                        />
-            
-                        <Image 
-                          source={require('../../assets/gradient.png')} 
-                          style={{
-                            width: 339, // Sesuaikan dengan ukuran gambar dummy
-                            height: 203, // Sesuaikan dengan ukuran gambar dummy
-                            position: 'absolute', // Gunakan absolute positioning
-                            top: 0, // Posisikan di bagian atas
-                            left: -1, // Posisikan di bagian kiri
-                            borderRadius: 20, // Sesuaikan dengan border radius gambar dummy
-                          }}
-                        />
-            
-                        {/* Tambahkan teks di atas gradient */}
-                        <View style={{
-                          position: 'absolute',
-                          top: 120, // Sesuaikan posisi teks dari atas
-                          left: 20, // Sesuaikan posisi teks dari kiri
-                          right: 20, // Sesuaikan posisi teks dari kanan
-                        }}>
-                          <Text style={{
-                            color: colors.white,
-                            fontSize: 18,
-                            fontWeight: 'bold',
-                            marginBottom: 10,
-                            fontFamily:fonts.primary[600],
-                            textAlign:"left",
-                            top:10
-                          }}>
-                     Pengumuman - Gathering guru dalam rangka Hari Guru
-                          </Text>
-                         
-                         <View style={{
-                            flexDirection:"row",
-                            justifyContent:'flex-end',
-                            alignItems:"center"
-                         }}>
-                         <Text style={{
-                            color: colors.white,
-                            fontSize: 12,
-                            fontStyle: 'italic',
-                            top:5
-                          }}>
-                            Selengkapnya {'>'}
-                          </Text>
-                         </View>
-                        </View>
-                      </View>
-                    </TouchableNativeFeedback>
-
+              <Icon type='ionicon' name='add' color={colors.white} />
             </View>
-        </ScrollView>
+          </Pressable>
+        }
+      </View>
     </View>
   )
 }

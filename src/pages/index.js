@@ -30,13 +30,25 @@ import BukuKunjungan from './Menu/bukukunjungan';
 import TambahBukuKunjungan from './Menu/kunjuganadd';
 import MeetingPengawas from './Menu/meetingpengawas';
 import TambahMeeting from './Menu/tambahmeeting';
+import MateriDetail from './Menu/MateriDetail';
+import ShowWeb from './Menu/ShowWeb';
+import ShowPDF from './Menu/ShowPDF';
+import MeetingDetail from './Menu/MeetingDetail';
+import KunjunganDetail from './Menu/KunjunganDetail';
+import AgendaDetail from './Menu/AgendaDetail';
 
 
 export {
   Splash,
+  KunjunganDetail,
+  AgendaDetail,
   Home,
   Login,
+  MeetingDetail,
+  ShowWeb,
+  ShowPDF,
   Account,
+  MateriDetail,
   AccountEdit,
   KalkulatorKompos,
   Petunjuk,
@@ -54,20 +66,20 @@ export {
   ProfilPengawas,
   Diskusi,
   PilihPengawas,
-AgendaPengawas,
-Meeting,
-Pengumuman,
-PengumumanDetail,
-TanyaPengawas,
-HomePengawas,
-ProfileGuru,
-BukuKunjungan,
-TambahBukuKunjungan,
-MeetingPengawas,
-TambahMeeting,
+  AgendaPengawas,
+  Meeting,
+  Pengumuman,
+  PengumumanDetail,
+  TanyaPengawas,
+  HomePengawas,
+  ProfileGuru,
+  BukuKunjungan,
+  TambahBukuKunjungan,
+  MeetingPengawas,
+  TambahMeeting,
 
 
 
-  
+
 
 };

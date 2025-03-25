@@ -1,91 +1,67 @@
-import { View, Text, ScrollView, TouchableNativeFeedback } from 'react-native';
-import React from 'react';
-import { colors, fonts } from '../../utils';
+import { View, Text, ScrollView, TouchableNativeFeedback, FlatList, Pressable } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { Color, colors, fonts } from '../../utils';
 import { MyHeader } from '../../components';
 import { Image } from 'react-native';
+import axios from 'axios';
+import { apiURL, webURL } from '../../utils/localStorage';
 
 export default function Materi({ navigation }) {
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+    axios.post(apiURL + 'materi').then(res => {
+      console.log(res.data);
+      setData(res.data)
+    })
+  }, [])
+
   return (
     <View style={{
       flex: 1,
       backgroundColor: colors.white
     }}>
       <MyHeader title="Materi" />
-
-      <ScrollView>
-        <View style={{
-          padding: 10
-        }}>
-          {/* Buatkan card menunya di sini */}
-
-        <TouchableNativeFeedback>
-        <View style={{
-            borderWidth: 1,
-            borderRadius: 20,
-            position: 'relative', // Tambahkan ini untuk memungkinkan absolute positioning di dalamnya
-            alignItems: 'center',
-            justifyContent: 'center'
-          }}>
-            <Image 
-              source={require('../../assets/dummy_materi.png')} 
-              style={{
-                borderRadius: 20,
-                width: 321, // Sesuaikan dengan ukuran gambar dummy
-                height: 203, // Sesuaikan dengan ukuran gambar dummy
-              }}
-            />
-
-            <Image 
-              source={require('../../assets/gradient.png')} 
-              style={{
-                width: 339, // Sesuaikan dengan ukuran gambar dummy
-                height: 203, // Sesuaikan dengan ukuran gambar dummy
-                position: 'absolute', // Gunakan absolute positioning
-                top: 0, // Posisikan di bagian atas
-                left: -1, // Posisikan di bagian kiri
-                borderRadius: 20, // Sesuaikan dengan border radius gambar dummy
-              }}
-            />
-
-            {/* Tambahkan teks di atas gradient */}
-            <View style={{
-              position: 'absolute',
-              top: 120, // Sesuaikan posisi teks dari atas
-              left: 20, // Sesuaikan posisi teks dari kiri
-              right: 20, // Sesuaikan posisi teks dari kanan
-            }}>
-              <Text style={{
-                color: colors.white,
-                fontSize: 18,
-                fontWeight: 'bold',
-                marginBottom: 10,
-                fontFamily:fonts.primary[600],
-                textAlign:"center",
-                top:10
+      <View style={{
+        flex: 1,
+        padding: 10
+      }}>
+        <FlatList data={data} renderItem={({ item, index }) => {
+          return (
+            <Pressable onPress={() => navigation.navigate('MateriDetail', item)}>
+              <View style={{
+                // padding: 10,
+                overflow: 'hidden',
+                borderWidth: 1,
+                borderRadius: 10,
+                borderColor: Color.blueGray[400],
               }}>
-               Panduan Kerja Pengawas Sekolah Pendidikan Dasar dan Menengah
-              </Text>
-             
-             <View style={{
-                flexDirection:"row",
-                justifyContent:'flex-end',
-                alignItems:"center"
-             }}>
-             <Text style={{
-                color: colors.white,
-                fontSize: 12,
-                fontStyle: 'italic',
-                top:5
-              }}>
-                Selengkapnya {'>'}
-              </Text>
-             </View>
-            </View>
-          </View>
-        </TouchableNativeFeedback>
-       
-        </View>
-      </ScrollView>
-    </View>
+                <Image style={{
+                  width: '100%',
+                  height: 220,
+                }} source={{
+                  uri: webURL + item.gambar
+                }} />
+                <View style={{
+                  padding: 10,
+                }}>
+                  <Text style={{
+                    fontFamily: fonts.secondary[600],
+                    fontSize: 16,
+                  }}>{item.judul}</Text>
+                  <Text style={{
+                    fontFamily: fonts.secondary[600],
+                    fontSize: 12,
+                    textAlign: 'right'
+                  }}>Selengkapnnya ></Text>
+                </View>
+              </View>
+
+            </Pressable>
+          )
+        }} />
+
+      </View>
+    </View >
   );
 }

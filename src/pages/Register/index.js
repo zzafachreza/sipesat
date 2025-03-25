@@ -1,23 +1,28 @@
 import { View, Text, ImageBackground, ScrollView, TouchableNativeFeedback } from 'react-native';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { fonts } from '../../utils';
 import { MyInput, MyPicker } from '../../components';
 import { colors } from '../../utils/colors';
 import { showMessage } from 'react-native-flash-message';
 import axios from 'axios';
+import { apiURL } from '../../utils/localStorage';
 
 export default function Register({ navigation }) {
   const [data, setData] = useState({
-    role: '',
+    role: 'Pengawas Sekolah',
     nama_lengkap: '',
     username: '',
     nip: '',
     unit_kerja: '',
+    kode_provinsi: '',
+    kode_kota_kabupaten: '',
+    kode_kecamatan: '',
+    kode_kelurahan: '',
     provinsi: '',
     kota_kabupaten: '',
     kecamatan: '',
     kelurahan: '',
-    no_tlp: '',
+    telepon: '',
     email: '',
     password: '',
   });
@@ -27,34 +32,23 @@ export default function Register({ navigation }) {
   };
 
   const handleRegister = () => {
-    const {
-      role,
-      nama_lengkap,
-      username,
-      nip,
-      unit_kerja,
-      provinsi,
-      kota_kabupaten,
-      kecamatan,
-      kelurahan,
-      no_tlp,
-      email,
-      password,
-    } = data;
+
+
+    console.log(data);
 
     if (
-      !role ||
-      !nama_lengkap ||
-      !username ||
-      !nip ||
-      !unit_kerja ||
-      !provinsi ||
-      !kota_kabupaten ||
-      !kecamatan ||
-      !kelurahan ||
-      !no_tlp ||
-      !email ||
-      !password
+      !data.role ||
+      !data.nama_lengkap ||
+      !data.username ||
+      !data.nip ||
+      !data.unit_kerja ||
+      !data.provinsi ||
+      !data.kota_kabupaten ||
+      !data.kecamatan ||
+      !data.kelurahan ||
+      !data.telepon ||
+      !data.email ||
+      !data.password
     ) {
       showMessage({
         type: 'danger',
@@ -70,14 +64,15 @@ export default function Register({ navigation }) {
 
     console.log('Data yang dikirim: ', data);
     axios
-      .post('API_KEY', data)
+      .post(apiURL + 'register', data)
       .then((res) => {
-        if (res.data.status === 'success') {
+        console.log(res.data)
+        if (res.data.status === 200) {
           showMessage({
             type: 'success',
             backgroundColor: colors.success,
             color: colors.white,
-            message: 'Selamat Anda Berhasil Mendaftar!',
+            message: res.data.message,
           });
           navigation.navigate('Login');
         } else {
@@ -94,6 +89,70 @@ export default function Register({ navigation }) {
       });
   };
 
+  const [PROVINSI, setPROVINSI] = useState([]);
+  const [KOTA, setKOTA] = useState([]);
+  const [KECAMATAN, setKECAMATAN] = useState([]);
+  const [KELURAHAN, setKELURAHAN] = useState([]);
+
+  const getProvinsi = () => {
+    axios.get('https://ibnux.github.io/data-indonesia/provinsi.json').then(res => {
+      let tmp = [];
+      res.data.map(i => {
+        tmp.push({
+          value: i.id + '#' + i.nama,
+          label: i.nama
+        })
+      })
+      console.log(tmp);
+      setPROVINSI(tmp);
+    })
+  }
+
+  const getKotaKabupaten = (id_provinsi) => {
+    axios.get(`https://ibnux.github.io/data-indonesia/kota/${id_provinsi}.json`).then(res => {
+      let tmp = [];
+      res.data.map(i => {
+        tmp.push({
+          value: i.id + '#' + i.nama,
+          label: i.nama
+        })
+      })
+      console.log(tmp);
+      setKOTA(tmp);
+    })
+  }
+
+  const getKecamatan = (id_kota) => {
+    axios.get(`https://ibnux.github.io/data-indonesia/kecamatan/${id_kota}.json`).then(res => {
+      let tmp = [];
+      res.data.map(i => {
+        tmp.push({
+          value: i.id + '#' + i.nama,
+          label: i.nama
+        })
+      })
+      console.log(tmp);
+      setKECAMATAN(tmp);
+    })
+  }
+
+  const getKelurahan = (id_kecamatan) => {
+    axios.get(`https://ibnux.github.io/data-indonesia/kelurahan/${id_kecamatan}.json`).then(res => {
+      let tmp = [];
+      res.data.map(i => {
+        tmp.push({
+          value: i.id + '#' + i.nama,
+          label: i.nama
+        })
+      })
+      console.log(tmp);
+      setKELURAHAN(tmp);
+    })
+  }
+
+  useEffect(() => {
+    getProvinsi();
+  }, [])
   return (
     <ImageBackground
       source={require('../../assets/bgreg.png')}
@@ -110,7 +169,7 @@ export default function Register({ navigation }) {
             fontSize: 24,
             color: colors.white,
             textAlign: 'center',
-            marginTop: 10,
+            marginTop: 0,
           }}
         >
           Daftar
@@ -126,7 +185,7 @@ export default function Register({ navigation }) {
               { label: 'Guru', value: 'Guru' },
             ]}
             selectedValue={data.role}
-            onValueChange={(x) => handleChange('role', x)}
+            onChangeText={(x) => handleChange('role', x)}
           />
           <MyInput
             label="Nama Lengkap"
@@ -170,33 +229,68 @@ export default function Register({ navigation }) {
             <View style={{ padding: 10 }}>
               <MyPicker
                 label="Provinsi"
+                data={PROVINSI}
                 selectedValue={data.provinsi}
-                onValueChange={(x) => handleChange('provinsi', x)}
+                onChangeText={(x) => {
+                  setData({
+                    ...data,
+                    provinsi: x.split("#")[1],
+                    kode_provinsi: x.split("#")[0]
+                  })
+                  getKotaKabupaten(x.split("#")[0]);
+                }}
               />
               <MyPicker
                 label="Kota/Kabupaten"
+                data={KOTA}
                 selectedValue={data.kota_kabupaten}
-                onValueChange={(x) => handleChange('kota_kabupaten', x)}
+                onChangeText={(x) => {
+
+                  setData({
+                    ...data,
+                    kota_kabupaten: x.split("#")[1],
+                    kode_kota_kabupaten: x.split("#")[0]
+                  })
+
+                  getKecamatan(x.split("#")[0]);
+                }}
               />
               <MyPicker
                 label="Kecamatan"
+                data={KECAMATAN}
                 selectedValue={data.kecamatan}
-                onValueChange={(x) => handleChange('kecamatan', x)}
+                onChangeText={(x) => {
+                  setData({
+                    ...data,
+                    kecamatan: x.split("#")[1],
+                    kode_kecamatan: x.split("#")[0]
+                  })
+
+                  getKelurahan(x.split("#")[0])
+                }}
               />
               <MyPicker
                 label="Kelurahan"
+                data={KELURAHAN}
                 selectedValue={data.kelurahan}
-                onValueChange={(x) => handleChange('kelurahan', x)}
+                onChangeText={(x) => {
+                  setData({
+                    ...data,
+                    kelurahan: x.split("#")[1],
+                    kode_kelurahan: x.split("#")[0]
+                  })
+                }}
               />
             </View>
           </View>
 
           <MyInput
             label="Nomor Telepon"
+            keyboardType="phone-pad"
             placeholder="Isi Nomor Telepon"
             colorlabel={colors.primary}
-            value={data.no_tlp}
-            onChangeText={(x) => handleChange('no_tlp', x)}
+            value={data.telepon}
+            onChangeText={(x) => handleChange('telepon', x)}
           />
           <MyInput
             label="Email"

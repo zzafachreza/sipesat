@@ -1,26 +1,35 @@
-import { View, Text, ScrollView, TouchableOpacity, Linking } from 'react-native';
-import React from 'react';
+import { View, Text, ScrollView, TouchableOpacity, Linking, FlatList } from 'react-native';
+import React, { useEffect, useState } from 'react';
 import { colors, fonts } from '../../utils';
 import { MyHeader } from '../../components';
 import { Icon } from 'react-native-elements';
 import { Image } from 'react-native';
+import axios from 'axios';
+import { apiURL } from '../../utils/localStorage';
 
 export default function TanyaPengawas({ navigation }) {
-    const handleWhatsAppClick = () => {
+    const handleWhatsAppClick = (x) => {
         const phoneNumber = '6281319456595'; // Nomor WhatsApp pengawas
         const url = `https://wa.me/${phoneNumber}`;
         Linking.openURL(url).catch(err => console.error("Gagal membuka WhatsApp:", err));
     };
 
+    const [data, setData] = useState([]);
+    useEffect(() => {
+        axios.post(apiURL + 'pengawas').then(res => {
+            console.log(res.data);
+            setData(res.data)
+        })
+    }, []);
+
     return (
         <View style={{ flex: 1, backgroundColor: colors.white }}>
             <MyHeader title="Tanya Pengawas" />
 
-            <ScrollView>
-                <View style={{ padding: 10 }}>
-                    {/* Card Pengawas */}
+            <FlatList data={data} renderItem={({ item, value }) => {
+                return (
                     <TouchableOpacity
-                        onPress={handleWhatsAppClick}
+                        onPress={() => handleWhatsAppClick(item.telepon)}
                         style={{
                             backgroundColor: colors.white,
                             borderRadius: 10,
@@ -36,32 +45,32 @@ export default function TanyaPengawas({ navigation }) {
                     >
                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                             {/* Icon Profil */}
-                        <Image style={{
-                            width:80,
-                            height:79,
-                            borderRadius:100,
-                        }} source={require('../../assets/dummy_profile.png')}/>
+                            <Image style={{
+                                width: 80,
+                                height: 79,
+                                borderRadius: 100,
+                            }} source={require('../../assets/dummy_profile.png')} />
 
                             {/* Nama dan Nomor */}
                             <View style={{ marginLeft: 10 }}>
                                 <Text style={{ fontFamily: 'Poppins-SemiBold', fontSize: 16, color: colors.primary }}>
-                                    Ridho Firmansyah
+                                    {item.nama_lengkap}
                                 </Text>
                                 <View style={{
-                                    flexDirection:'row',
-                                    justifyContent:"flex-start",
-                                    alignItems:"center",
+                                    flexDirection: 'row',
+                                    justifyContent: "flex-start",
+                                    alignItems: "center",
 
                                 }}>
-                                <Icon type='ionicon' name='logo-whatsapp' size={20} color={colors.success}/>
-                                <Text style={{ fontFamily: fonts.primary[600], fontSize: 14, color: colors.text, paddingHorizontal:10, top:4 }}>089756745645</Text>
+                                    <Icon type='ionicon' name='logo-whatsapp' size={20} color={colors.success} />
+                                    <Text style={{ fontFamily: fonts.primary[600], fontSize: 14, color: colors.text, paddingHorizontal: 10, top: 4 }}>{item.telepon}</Text>
                                 </View>
 
                             </View>
                         </View>
                     </TouchableOpacity>
-                </View>
-            </ScrollView>
+                )
+            }} />
         </View>
     );
 }

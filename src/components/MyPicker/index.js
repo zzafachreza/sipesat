@@ -13,7 +13,7 @@ export default function MyPicker({
 }) {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedItem, setSelectedItem] = useState(data[0]);  // Default selected item
-  
+
   const renderItem = ({ item }) => (
     <TouchableOpacity
       style={styles.itemContainer}
@@ -87,7 +87,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 30,
     borderColor: Color.blueGray[300],
-    minHeight: 60,  // Atur minimum height supaya cukup untuk teks panjang
+    minHeight: 50,  // Atur minimum height supaya cukup untuk teks panjang
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 15,

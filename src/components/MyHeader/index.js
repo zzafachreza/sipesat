@@ -16,7 +16,7 @@ export default function MyHeader({ onPress, color = colors.primary, title, icon 
       marginHorizontal: 0,
       flexDirection: 'row',
       alignItems: 'center',
-      paddingVertical:20,
+      paddingVertical: 20,
       backgroundColor: colors.white,
       padding: 20,
       justifyContent: 'flex-start',
@@ -30,23 +30,23 @@ export default function MyHeader({ onPress, color = colors.primary, title, icon 
         justifyContent: 'center',
         alignItems: 'center',
         padding: 10,
-        borderWidth:1,
-        borderRadius:50,
-        borderColor:Colors.primary
+        borderWidth: 1,
+        borderRadius: 50,
+        borderColor: Colors.primary
       }}>
-      <View>
+        <View>
           <Icon type='ionicon' name='arrow-back-outline' size={20} color={color} />
-      </View>
+        </View>
       </TouchableOpacity>
 
 
       <Text style={{
-        fontFamily:fonts.primary[600],
+        fontFamily: fonts.primary[600],
         flex: 1,
-        fontSize: 20,
+        fontSize: 16,
         marginLeft: 10,
         color: color,
-        top:3
+
       }}>{title}</Text>
 
       {icon &&

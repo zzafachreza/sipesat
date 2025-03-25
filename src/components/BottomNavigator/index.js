@@ -38,99 +38,114 @@ export default function BottomNavigator({ state, descriptors, navigation }) {
 
   return (
     <View style={{
-      backgroundColor:colors.primary,
+      backgroundColor: colors.primary,
     }}>
 
-    <View style={{
-      padding:10,
-      marginTop:0
-    }}>
-    <View
-      style={{
-        backgroundColor: colors.white,
-        flexDirection: 'row',
-        
-        borderTopColor: Color.blueGray[100],
-        height: 65,
-        borderRadius:50
-      }}
-    >
-      {state.routes.map((route, index) => {
-        const { options } = descriptors[route.key];
-        const label =
-          options.tabBarLabel !== undefined
-            ? options.tabBarLabel
-            : options.title !== undefined
-            ? options.title
-            : route.name;
+      <View style={{
+        padding: 10,
+        marginTop: 0
+      }}>
+        <View
+          style={{
+            backgroundColor: colors.white,
+            flexDirection: 'row',
 
-        const isFocused = state.index === index;
+            borderTopColor: Color.blueGray[100],
+            height: 65,
+            borderRadius: 50
+          }}
+        >
+          {state.routes.map((route, index) => {
+            const { options } = descriptors[route.key];
+            const label =
+              options.tabBarLabel !== undefined
+                ? options.tabBarLabel
+                : options.title !== undefined
+                  ? options.title
+                  : route.name;
 
-        const onPress = () => {
-          const event = navigation.emit({
-            type: 'tabPress',
-            target: route.key,
-            canPreventDefault: true,
-          });
+            const isFocused = state.index === index;
 
-          if (!isFocused && !event.defaultPrevented) {
-            navigation.navigate(route.name, { key: 0 });
-          }
-        };
+            const onPress = () => {
+              const event = navigation.emit({
+                type: 'tabPress',
+                target: route.key,
+                canPreventDefault: true,
+              });
 
-        const onLongPress = () => {
-          navigation.emit({
-            type: 'tabLongPress',
-            target: route.key,
-          });
-        };
+              if (!isFocused && !event.defaultPrevented) {
+                if (route.name == 'Profile') {
+                  getData('user').then(res => {
+                    if (!res) {
+                      navigation.navigate('Login', { key: 0 });
+                    } else {
+                      if (res.role == 'Pengawas Sekolah') {
+                        navigation.navigate('PengawasMainApp', { key: 0 });
+                      } else {
+                        navigation.navigate('GuruMainApp', { key: 0 });
+                      }
+                    }
+                  })
+                } else {
+                  navigation.navigate(route.name, { key: 0 });
+                }
 
-        let iconName;
-        switch (label) {
-          case 'Home':
-            iconName = isFocused ? 'home' : 'home-outline';
-            break;
-          case 'Profile':
-            iconName = isFocused ? 'person' : 'person-outline';
-            break;
-          default:
-            iconName = 'help-circle-outline';
-            break;
-        }
+              }
+            };
 
-        return (
-          <TouchableOpacity
-            key={index}
-            accessibilityRole="button"
-            accessibilityStates={isFocused ? ['selected'] : []}
-            accessibilityLabel={options.tabBarAccessibilityLabel}
-            testID={options.tabBarTestID}
-            onPress={onPress}
-            onLongPress={onLongPress}
-            style={{ flex: 1 }}
-          >
-            <View
-              style={{
-                justifyContent: 'center',
-                alignItems: 'center',
-                height: 65,
-              }}
-            >
-              <Icon
-                type="ionicon"
-                name={iconName}
-                size={35}
-                color={isFocused ? colors.primary : colors.primary}
-              />
-             
-            </View>
-          </TouchableOpacity>
-        );
-      })}
+            const onLongPress = () => {
+              navigation.emit({
+                type: 'tabLongPress',
+                target: route.key,
+              });
+            };
+
+            let iconName;
+            switch (label) {
+              case 'Home':
+                iconName = isFocused ? 'home' : 'home-outline';
+                break;
+              case 'Profile':
+                iconName = isFocused ? 'person' : 'person-outline';
+                break;
+              default:
+                iconName = 'help-circle-outline';
+                break;
+            }
+
+            return (
+              <TouchableOpacity
+                key={index}
+                accessibilityRole="button"
+                accessibilityStates={isFocused ? ['selected'] : []}
+                accessibilityLabel={options.tabBarAccessibilityLabel}
+                testID={options.tabBarTestID}
+                onPress={onPress}
+                onLongPress={onLongPress}
+                style={{ flex: 1 }}
+              >
+                <View
+                  style={{
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    height: 65,
+                  }}
+                >
+                  <Icon
+                    type="ionicon"
+                    name={iconName}
+                    size={35}
+                    color={isFocused ? colors.primary : colors.primary}
+                  />
+
+                </View>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+      </View>
     </View>
-    </View>
-    </View>
-    
+
   );
 }
 
