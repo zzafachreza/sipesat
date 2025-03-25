@@ -30,6 +30,7 @@ export default function Materi({ navigation }) {
           return (
             <Pressable onPress={() => navigation.navigate('MateriDetail', item)}>
               <View style={{
+                marginBottom: 10,
                 // padding: 10,
                 overflow: 'hidden',
                 borderWidth: 1,
@@ -53,7 +54,7 @@ export default function Materi({ navigation }) {
                     fontFamily: fonts.secondary[600],
                     fontSize: 12,
                     textAlign: 'right'
-                  }}>Selengkapnnya ></Text>
+                  }}>Selengkapnya ></Text>
                 </View>
               </View>
 

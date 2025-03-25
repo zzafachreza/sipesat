@@ -281,7 +281,7 @@ export default function AccountEdit({ navigation, route }) {
                 </View>
 
                 <MyInput
-                    label="Nomor Telepon"
+                    label="Nomor Telepon (62812 . . .)"
                     keyboardType="phone-pad"
                     placeholder="Isi Nomor Telepon"
                     colorlabel={colors.primary}

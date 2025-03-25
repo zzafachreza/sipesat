@@ -46,7 +46,11 @@ export default function Splash({ navigation }) {
         if (!res) {
           navigation.replace("MainApp");
         } else {
-          navigation.replace("MainApp");
+          if (res.role == 'Pengawas Sekolah') {
+            navigation.replace("PengawasMainApp");
+          } else {
+            navigation.replace("GuruMainApp");
+          }
         }
       })
 

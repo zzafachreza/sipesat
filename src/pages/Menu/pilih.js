@@ -44,7 +44,7 @@ export default function PilihPengawas({ navigation, route }) {
     }}>
       <MyHeader title="Profile Pengawas" />
 
-      <FlatList data={data} renderItem={({ item, index }) => {
+      <FlatList data={data.sort((a, b) => Number(b.jumlah) - Number(a.jumlah))} renderItem={({ item, index }) => {
         return (
           <View style={{
             padding: 10,
@@ -71,6 +71,7 @@ export default function PilihPengawas({ navigation, route }) {
                 }} source={{
                   uri: webURL + item.foto_user
                 }} />
+
               </View>
 
               <View style={{ marginLeft: 10, flex: 1 }}>
@@ -114,7 +115,7 @@ export default function PilihPengawas({ navigation, route }) {
                   </Text>
                 </View>
                 {
-                  (item.jumlah == 0 && item.status == 0) &&
+                  (item.jumlah == 0 && item.status == 0 && data.filter(i => i.jumlah > 0).length == 0) &&
                   <MyButton onPress={() => CekPengawas(item.id_pengguna)} title="Pilih" />
                 }
 

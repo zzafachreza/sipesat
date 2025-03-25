@@ -33,6 +33,7 @@ export default function Regulasi({ navigation }) {
             })}>
               <View style={{
                 // padding: 10,
+                marginBottom: 10,
                 overflow: 'hidden',
                 borderWidth: 1,
                 borderRadius: 10,
@@ -55,7 +56,7 @@ export default function Regulasi({ navigation }) {
                     fontFamily: fonts.secondary[600],
                     fontSize: 12,
                     textAlign: 'right'
-                  }}>Selengkapnnya ></Text>
+                  }}>Selengkapnya ></Text>
                 </View>
               </View>
             </Pressable>

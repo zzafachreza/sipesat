@@ -66,7 +66,7 @@ export default function Pengumuman({ navigation, route }) {
                     fontFamily: fonts.secondary[600],
                     fontSize: 12,
                     textAlign: 'right'
-                  }}>Selengkapnnya ></Text>
+                  }}>Selengkapnya ></Text>
                 </View>
               </View>
 

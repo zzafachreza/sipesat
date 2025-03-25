@@ -211,8 +211,7 @@ export default function ({ navigation, route }) {
                             <MylistPengaturan label="Nama Lengkap" icon='person-outline' value={user.nama_lengkap} />
                             <MylistPengaturan label="Username" icon='at' value={user.username} />
                             <MylistPengaturan label="NIP" icon='card-outline' value={user.nip} />
-                            <MylistPengaturan label="Unit Kerja" icon='ribbon-outline' value={user.nip} />
-                            <MylistPengaturan label="Unit Kerja" icon='ribbon-outline' value={user.nip} />
+                            <MylistPengaturan label="Unit Kerja" icon='ribbon-outline' value={user.unit_kerja} />
                             <MylistPengaturan label="Provinsi" icon='location-outline' value={user.provinsi} />
                             <MylistPengaturan label="Kota / Kabupaten" icon='location-outline' value={user.kota_kabupaten} />
                             <MylistPengaturan label="Kecamatan" icon='location-outline' value={user.kecamatan} />

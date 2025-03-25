@@ -1,5 +1,5 @@
-import { View, Text, ImageBackground, ScrollView, Image, TouchableNativeFeedback, Alert } from 'react-native'
-import React, { useState } from 'react'
+import { View, Text, ImageBackground, ScrollView, Image, TouchableNativeFeedback, Alert, Pressable, Linking } from 'react-native'
+import React, { useEffect, useState } from 'react'
 import { colors, fonts } from '../../utils'
 import { MyInput } from '../../components'
 import { showMessage } from 'react-native-flash-message';
@@ -71,6 +71,13 @@ export default function Login({ navigation }) {
                 })
         }
     };
+
+    const [comp, setComp] = useState({});
+    useEffect(() => {
+        axios.post(apiURL + 'company').then(res => {
+            setComp(res.data[0]);
+        })
+    }, [])
 
 
     return (
@@ -151,9 +158,9 @@ export default function Login({ navigation }) {
 
 
                                 <View style={{
-                                    marginTop: 50
+                                    marginTop: 30
                                 }}>
-                                    <TouchableNativeFeedback onPress={() => navigation.navigate('Register')}>
+                                    <Pressable onPress={() => navigation.navigate('Register')}>
                                         <Text style={{
                                             fontFamily: fonts.primary[500],
                                             color: '#D7F0EA',
@@ -164,13 +171,17 @@ export default function Login({ navigation }) {
                                             fontFamily: fonts.primary[600],
                                             color: colors.white
                                         }}>Daftar</Text></Text>
-                                    </TouchableNativeFeedback>
+                                    </Pressable>
 
                                     <View style={{
+                                        marginTop: 10,
                                         flexDirection: 'row',
                                         justifyContent: "center"
                                     }}>
-                                        <TouchableNativeFeedback>
+                                        <Pressable onPress={() => {
+                                            console.log(comp);
+                                            Linking.openURL('https://wa.me/' + comp.tlp + '?text=Halo Admin Saya lupa password . . ')
+                                        }}>
                                             <View style={{
                                                 marginTop: 10,
                                             }}>
@@ -180,7 +191,7 @@ export default function Login({ navigation }) {
                                                     fontSize: 12
                                                 }}>Lupa Kata Sandi</Text>
                                             </View>
-                                        </TouchableNativeFeedback>
+                                        </Pressable>
                                     </View>
                                 </View>
 

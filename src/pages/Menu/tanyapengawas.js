@@ -5,11 +5,11 @@ import { MyHeader } from '../../components';
 import { Icon } from 'react-native-elements';
 import { Image } from 'react-native';
 import axios from 'axios';
-import { apiURL } from '../../utils/localStorage';
+import { apiURL, webURL } from '../../utils/localStorage';
 
 export default function TanyaPengawas({ navigation }) {
     const handleWhatsAppClick = (x) => {
-        const phoneNumber = '6281319456595'; // Nomor WhatsApp pengawas
+        const phoneNumber = x; // Nomor WhatsApp pengawas
         const url = `https://wa.me/${phoneNumber}`;
         Linking.openURL(url).catch(err => console.error("Gagal membuka WhatsApp:", err));
     };
@@ -49,7 +49,9 @@ export default function TanyaPengawas({ navigation }) {
                                 width: 80,
                                 height: 79,
                                 borderRadius: 100,
-                            }} source={require('../../assets/dummy_profile.png')} />
+                            }} source={{
+                                uri: webURL + item.foto_user
+                            }} />
 
                             {/* Nama dan Nomor */}
                             <View style={{ marginLeft: 10 }}>

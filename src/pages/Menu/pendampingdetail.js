@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, StyleSheet, Image, Alert, Pressable, Linking } from 'react-native'
+import { View, Text, ScrollView, StyleSheet, Image, Modal, Alert, Pressable, Linking } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { colors, fonts, windowWidth } from '../../utils'
 import { MyButton, MyHeader } from '../../components'
@@ -10,11 +10,13 @@ import moment from 'moment';
 import RNHTMLtoPDF from 'react-native-html-to-pdf';
 import RNFS from 'react-native-fs';
 import Share from 'react-native-share';
+import { TouchableOpacity } from 'react-native';
 
 
 export default function PedampinganDetail({ navigation, route }) {
     const item = route.params;
     console.log(item);
+    const [modalVisible, setModalVisible] = useState(false); // State untuk modal
 
     const createPDF = async () => {
 
@@ -214,15 +216,15 @@ export default function PedampinganDetail({ navigation, route }) {
                         </Text>
 
                     </View>
-
-                    <Image source={{
-                        uri: webURL + item.gambar
-                    }} style={{
-                        width: windowWidth - 50,
-                        borderRadius: 5,
-                        height: 200,
-                    }} />
-
+                    <TouchableOpacity onPress={() => setModalVisible(true)}>
+                        <Image source={{
+                            uri: webURL + item.gambar
+                        }} style={{
+                            width: windowWidth - 50,
+                            borderRadius: 5,
+                            height: 200,
+                        }} />
+                    </TouchableOpacity>
                     <MyButton title="Download PDF" warna={colors.danger} onPress={createPDF} />
 
 
@@ -270,8 +272,49 @@ export default function PedampinganDetail({ navigation, route }) {
                     </View>
                 </View>
             }
+
+            <Modal visible={modalVisible} transparent={true}>
+                <View style={styles.modalContainer}>
+                    <TouchableOpacity style={styles.modalClose} onPress={() => setModalVisible(false)}>
+                        <Text style={styles.closeText}>✕</Text>
+                    </TouchableOpacity>
+                    <Image
+                        style={styles.fullImage}
+                        source={{ uri: webURL + item.gambar }}
+                        resizeMode="contain"
+                    />
+                </View>
+            </Modal>
         </View>
     )
 }
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({
+    modalContainer: {
+        flex: 1,
+        backgroundColor: 'rgba(0,0,0,0.9)',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    modalClose: {
+        position: 'absolute',
+        top: 40,
+        right: 20,
+        backgroundColor: 'rgba(255,255,255,0.8)',
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    closeText: {
+        fontSize: 20,
+        color: 'black',
+        fontWeight: 'bold',
+    },
+    fullImage: {
+        width: '90%',
+        height: '80%',
+        resizeMode: 'contain'
+    },
+});

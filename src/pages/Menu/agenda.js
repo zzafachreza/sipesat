@@ -61,9 +61,14 @@ export default function AgendaPengawas({ navigation, route }) {
           // Callback that gets called when the user selects a day
           onDayPress={day => {
             let tt = [...data];
-            let filtered = tt.filter(i => i.tanggal == day.dateString)[0];
-            console.log(filtered);
-            Alert.alert(filtered.judul, `${filtered.keterangan}\nTanggal : ${filtered.tanggal}\nWaktu : ${filtered.jam_mulai} - ${filtered.jam_selesai}`)
+            let cek = tt.filter(i => i.tanggal == day.dateString).length;
+
+            if (cek > 0) {
+              let filtered = tt.filter(i => i.tanggal == day.dateString)[0];
+              console.log(filtered);
+              Alert.alert(filtered.judul, `${filtered.keterangan}\nTanggal : ${filtered.tanggal}\nWaktu : ${filtered.jam_mulai} - ${filtered.jam_selesai}`)
+
+            }
 
           }}
           // Mark specific dates as marked

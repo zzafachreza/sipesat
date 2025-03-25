@@ -47,7 +47,6 @@ export default function Register({ navigation }) {
       !data.kecamatan ||
       !data.kelurahan ||
       !data.telepon ||
-      !data.email ||
       !data.password
     ) {
       showMessage({
@@ -202,7 +201,7 @@ export default function Register({ navigation }) {
             onChangeText={(x) => handleChange('username', x)}
           />
           <MyInput
-            label="NIP"
+            label="NIP (Jika tidak punya isi angka 0)"
             placeholder="Isi NIP"
             colorlabel={colors.primary}
             value={data.nip}
@@ -285,7 +284,7 @@ export default function Register({ navigation }) {
           </View>
 
           <MyInput
-            label="Nomor Telepon"
+            label="Nomor Telepon (62812 . . .)"
             keyboardType="phone-pad"
             placeholder="Isi Nomor Telepon"
             colorlabel={colors.primary}
@@ -294,7 +293,7 @@ export default function Register({ navigation }) {
           />
           <MyInput
             label="Email"
-            placeholder="Isi Email"
+            placeholder="Isi Email ( opsional )"
             colorlabel={colors.primary}
             value={data.email}
             onChangeText={(x) => handleChange('email', x)}

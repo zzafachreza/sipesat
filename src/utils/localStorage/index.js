@@ -20,8 +20,8 @@ export const getData = async key => {
 };
 
 
-// export const apiURL = 'https://sipesat.zavalabs.com/api/';
-export const apiURL = 'http://192.168.100.10/sipesat_web/api/';
+export const apiURL = 'https://sipesat.zavalabs.com/api/';
+// export const apiURL = 'http://192.168.100.10/sipesat_web/api/';
 export const MYAPP = 'SIPESAT';
 export const api_token = 'd4e729bcd8aab6f0a710e8ca3d31524cb5783dd1d63ddbf32fbed278c435605f';
 export const webURL = apiURL.replace("api/", "");
