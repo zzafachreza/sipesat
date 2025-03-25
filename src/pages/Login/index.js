@@ -55,7 +55,14 @@ export default function Login({ navigation }) {
                             message: res.data.message
                         });
                         storeData('user', res.data.data)
-                        navigation.navigate('MainApp');
+
+                        if (res.data.data.role == 'Pengawas Sekolah') {
+                            navigation.replace("PengawasMainApp");
+                        } else {
+                            navigation.replace("GuruMainApp");
+                        }
+
+
                     } else {
                         showMessage({
                             type: 'danger',
