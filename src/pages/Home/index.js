@@ -1,34 +1,20 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   StyleSheet,
   Text,
   View,
   Image,
-  Animated,
   ImageBackground,
-  ScrollView,
-  Dimensions,
   TouchableNativeFeedback,
 } from 'react-native';
-import { getData } from '../../utils/localStorage';
-import { colors, fonts, windowWidth } from '../../utils';
+import {getData} from '../../utils/localStorage';
+import {colors, fonts} from '../../utils';
 
-const images = [
-  { id: 1, src: require('../../assets/korosel-1.png'), label: 'Gambar 1' },
-  { id: 2, src: require('../../assets/koresel-2.png'), label: 'Gambar 2' },
-  { id: 3, src: require('../../assets/koresel-3.png'), label: 'Gambar 3' },
-];
-
-const windowHeight = Dimensions.get('window').height;
-
-export default function Home({ navigation, route }) {
+export default function Home({navigation}) {
   const [user, setUser] = useState({});
-  const scrollX = useRef(new Animated.Value(0)).current; // Untuk animasi scroll
-  const scrollViewRef = useRef(null); // Untuk mengontrol scroll view
-  const [currentIndex, setCurrentIndex] = useState(0);
 
   const __getUser = () => {
-    getData('user').then((u) => {
+    getData('user').then(u => {
       setUser(u);
     });
   };
@@ -37,229 +23,134 @@ export default function Home({ navigation, route }) {
     __getUser();
   }, []);
 
-  // useEffect(() => {
-  //   const interval = setInterval(() => {
-  //     const nextIndex = (currentIndex + 1) % images.length;
-  //     scrollViewRef.current.scrollTo({
-  //       x: nextIndex * windowWidth,
-  //       animated: true,
-  //     });
-  //     setCurrentIndex(nextIndex);
-  //   }, 3000); // Ganti slide setiap 3 detik
-
-  //   return () => clearInterval(interval); // Hentikan interval saat komponen di-unmount
-  // }, [currentIndex]);
+  const MenuItem = ({title, icon, onPress}) => (
+    <TouchableNativeFeedback onPress={onPress}>
+      <View style={styles.menuItem}>
+        <Image
+          source={require('../../assets/efek.png')}
+          style={{
+            // width: 100,
+            right: -10,
+            height: '100%',
+            position: 'absolute',
+          }}
+        />
+        <View
+          style={{
+            padding: 10,
+            flexDirection: 'row',
+            alignItems: 'center',
+          }}>
+          <Text style={styles.menuText}>{title}</Text>
+          <Image source={icon} style={styles.menuIcon} />
+        </View>
+      </View>
+    </TouchableNativeFeedback>
+  );
 
   return (
     <ImageBackground
       source={require('../../assets/bghome.png')}
-      style={{
-        flex: 1,
-        backgroundColor: colors.white,
-        width: '100%',
-        height: '100%',
-      }}
-    >
-    
-        <View style={{ padding: 10 }}>
-          {/* Sambutan & nama */}
-
-          <View style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            padding:10
-          }}>
-
+      style={styles.background}>
+      <View style={styles.container}>
+        {/* Sambutan & nama */}
+        <View style={styles.header}>
           <View>
-            <Text style={{
-              fontFamily:fonts.primary[600],
-              fontSize:20,
-              color:colors.primary,
-            }}>Hi, User</Text>
-             <Text style={{
-              fontFamily:fonts.primary[600],
-              fontSize:20,
-              color:colors.primary,
-            }}>Aplikasi SiPesat</Text>
+            <Text style={styles.greeting}>Hi, {user?.nama || 'User'}</Text>
+            <Text style={styles.appName}>Aplikasi SiPesat</Text>
           </View>
-
-          <View>
-            <Image source={require('../../assets/logohome.png')} style={{
-              width:57,
-              height:55,
-            }}/>
-          </View>
-
-          </View>
-
-
-          {/* MENU */}
-          <View style={{
-            padding:10,
-            marginTop:50
-            
-          }}>
-
-          <TouchableNativeFeedback onPress={() => navigation.navigate('InfoAplikasi')}>
-            <View style={{
-              padding:10,
-              backgroundColor:colors.white,
-              borderRadius:30,
-              borderWidth:3,
-              borderColor:colors.primary,
-              flexDirection:"row",
-              justifyContent:"space-between",
-              alignItems:'center'
-            }}>
-
-            <View>
-              <Text style={{
-                fontFamily:fonts.primary[600],
-                fontSize:25,
-                color:colors.primary,
-              }}>Info Aplikasi</Text>
-            </View>
-
-            <View>
-              <Image source={require('../../assets/info_icon.png')} style={{
-                width:70,
-                height:70,
-              }}/>
-            </View>
-
-            </View>
-          </TouchableNativeFeedback>
-
-          <TouchableNativeFeedback onPress={() => navigation.navigate('Materi')}>
-            <View style={{
-              padding:10,
-              backgroundColor:colors.white,
-              borderRadius:30,
-              borderWidth:3,
-              borderColor:colors.primary,
-              flexDirection:"row",
-              justifyContent:"space-between",
-              alignItems:'center',
-              marginTop:10
-            }}>
-
-            <View>
-              <Text style={{
-                fontFamily:fonts.primary[600],
-                fontSize:25,
-                color:colors.primary,
-              }}>Materi</Text>
-            </View>
-
-            <View>
-              <Image source={require('../../assets/materi_icon.png')} style={{
-                width:70,
-                height:70,
-              }}/>
-            </View>
-
-            </View>
-          </TouchableNativeFeedback>
-
-          <TouchableNativeFeedback onPress={() => navigation.navigate('Regulasi')}>
-            <View style={{
-              padding:10,
-              backgroundColor:colors.white,
-              borderRadius:30,
-              borderWidth:3,
-              borderColor:colors.primary,
-              flexDirection:"row",
-              justifyContent:"space-between",
-              alignItems:'center',
-              marginTop:10
-              
-            }}>
-
-            <View>
-              <Text style={{
-                fontFamily:fonts.primary[600],
-                fontSize:25,
-                color:colors.primary,
-              }}>Regulasi</Text>
-            </View>
-
-            <View>
-              <Image source={require('../../assets/regulasi_icon.png')} style={{
-                width:70,
-                height:70,
-              }}/>
-            </View>
-
-            </View>
-          </TouchableNativeFeedback>
-
-          <TouchableNativeFeedback onPress={() => navigation.navigate("ProfilPengawas")}>
-            <View style={{
-              padding:10,
-              backgroundColor:colors.white,
-              borderRadius:30,
-              borderWidth:3,
-              borderColor:colors.primary,
-              flexDirection:"row",
-              justifyContent:"space-between",
-              alignItems:'center',
-              marginTop:10
-            }}>
-
-            <View>
-              <Text style={{
-                fontFamily:fonts.primary[600],
-                fontSize:25,
-                color:colors.primary,
-              }}>Profil Pengawas</Text>
-            </View>
-
-            <View>
-              <Image source={require('../../assets/profile_pengawas.png')} style={{
-                width:70,
-                height:70,
-              }}/>
-            </View>
-
-            </View>
-          </TouchableNativeFeedback>
-
-          <TouchableNativeFeedback onPress={() => navigation.navigate("Diskusi")}>
-            <View style={{
-              padding:10,
-              backgroundColor:colors.white,
-              borderRadius:30,
-              borderWidth:3,
-              borderColor:colors.primary,
-              flexDirection:"row",
-              justifyContent:"space-between",
-              alignItems:'center',
-              marginTop:10
-            }}>
-
-            <View>
-              <Text style={{
-                fontFamily:fonts.primary[600],
-                fontSize:25,
-                color:colors.primary,
-              }}>Diskusi</Text>
-            </View>
-
-            <View>
-              <Image source={require('../../assets/diskusi_icon.png')} style={{
-                width:70,
-                height:70,
-              }}/>
-            </View>
-
-            </View>
-          </TouchableNativeFeedback>
-
-          </View>
-       
+          <Image
+            source={require('../../assets/logohome.png')}
+            style={styles.logo}
+          />
         </View>
- 
+
+        {/* Menu */}
+        <View style={styles.menuWrapper}>
+          <MenuItem
+            title="Info Aplikasi"
+            icon={require('../../assets/info_icon.png')}
+            onPress={() => navigation.navigate('InfoAplikasi')}
+          />
+          <MenuItem
+            title="Materi"
+            icon={require('../../assets/materi_icon.png')}
+            onPress={() => navigation.navigate('Materi')}
+          />
+          <MenuItem
+            title="Regulasi"
+            icon={require('../../assets/regulasi_icon.png')}
+            onPress={() => navigation.navigate('Regulasi')}
+          />
+          <MenuItem
+            title="Profil Pengawas"
+            icon={require('../../assets/profile_pengawas.png')}
+            onPress={() => navigation.navigate('ProfilPengawas')}
+          />
+          <MenuItem
+            title="Diskusi"
+            icon={require('../../assets/diskusi_icon.png')}
+            onPress={() => navigation.navigate('Diskusi')}
+          />
+        </View>
+      </View>
     </ImageBackground>
   );
 }
+
+const styles = StyleSheet.create({
+  background: {
+    flex: 1,
+    backgroundColor: colors.white,
+    width: '100%',
+    height: '100%',
+  },
+  container: {
+    padding: 10,
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 10,
+  },
+  greeting: {
+    fontFamily: fonts.primary[600],
+    fontSize: 20,
+    color: colors.primary,
+  },
+  appName: {
+    fontFamily: fonts.primary[600],
+    fontSize: 20,
+    color: colors.primary,
+  },
+  logo: {
+    width: 57,
+    height: 55,
+  },
+  menuWrapper: {
+    padding: 10,
+  },
+  menuItem: {
+    padding: 0,
+    overflow: 'hidden',
+    backgroundColor: colors.white,
+    borderRadius: 20,
+    borderWidth: 2,
+    borderColor: colors.primary,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  menuText: {
+    flex: 1,
+    fontFamily: fonts.primary[600],
+    fontSize: 20,
+    color: colors.primary,
+  },
+  menuIcon: {
+    width: 65,
+    height: 65,
+  },
+});

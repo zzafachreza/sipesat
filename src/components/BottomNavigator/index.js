@@ -6,15 +6,15 @@ import {
   StyleSheet,
   Dimensions,
 } from 'react-native';
-import { Icon } from 'react-native-elements';
-import { Color, colors } from '../../utils/colors';
-import { useState, useEffect } from 'react';
-import { getData, urlAPI } from '../../utils/localStorage';
+import {Icon} from 'react-native-elements';
+import {Color, colors} from '../../utils/colors';
+import {useState, useEffect} from 'react';
+import {getData, urlAPI} from '../../utils/localStorage';
 import axios from 'axios';
-import { useIsFocused } from '@react-navigation/native';
-import { fonts } from '../../utils';
+import {useIsFocused} from '@react-navigation/native';
+import {fonts} from '../../utils';
 
-export default function BottomNavigator({ state, descriptors, navigation }) {
+export default function BottomNavigator({state, descriptors, navigation}) {
   const focusedOptions = descriptors[state.routes[state.index].key].options;
   const [cart, setCart] = useState(0);
   const isFocused = useIsFocused();
@@ -37,32 +37,29 @@ export default function BottomNavigator({ state, descriptors, navigation }) {
   }
 
   return (
-    <View style={{
-      backgroundColor: colors.primary,
-    }}>
-
-      <View style={{
-        padding: 10,
-        marginTop: 0
-      }}>
+    <View style={{}}>
+      <View
+        style={{
+          // padding: 10,
+          marginTop: 0,
+        }}>
         <View
           style={{
             backgroundColor: colors.white,
             flexDirection: 'row',
 
             borderTopColor: Color.blueGray[100],
-            height: 65,
-            borderRadius: 50
-          }}
-        >
+            height: 50,
+            // borderRadius: 50,
+          }}>
           {state.routes.map((route, index) => {
-            const { options } = descriptors[route.key];
+            const {options} = descriptors[route.key];
             const label =
               options.tabBarLabel !== undefined
                 ? options.tabBarLabel
                 : options.title !== undefined
-                  ? options.title
-                  : route.name;
+                ? options.title
+                : route.name;
 
             const isFocused = state.index === index;
 
@@ -77,19 +74,18 @@ export default function BottomNavigator({ state, descriptors, navigation }) {
                 if (route.name == 'Profile') {
                   getData('user').then(res => {
                     if (!res) {
-                      navigation.navigate('Login', { key: 0 });
+                      navigation.navigate('Login', {key: 0});
                     } else {
                       if (res.role == 'Pengawas Sekolah') {
-                        navigation.navigate('PengawasMainApp', { key: 0 });
+                        navigation.navigate('PengawasMainApp', {key: 0});
                       } else {
-                        navigation.navigate('GuruMainApp', { key: 0 });
+                        navigation.navigate('GuruMainApp', {key: 0});
                       }
                     }
-                  })
+                  });
                 } else {
-                  navigation.navigate(route.name, { key: 0 });
+                  navigation.navigate(route.name, {key: 0});
                 }
-
               }
             };
 
@@ -122,22 +118,19 @@ export default function BottomNavigator({ state, descriptors, navigation }) {
                 testID={options.tabBarTestID}
                 onPress={onPress}
                 onLongPress={onLongPress}
-                style={{ flex: 1 }}
-              >
+                style={{flex: 1}}>
                 <View
                   style={{
                     justifyContent: 'center',
                     alignItems: 'center',
-                    height: 65,
-                  }}
-                >
+                    height: 50,
+                  }}>
                   <Icon
                     type="ionicon"
                     name={iconName}
-                    size={35}
+                    size={25}
                     color={isFocused ? colors.primary : colors.primary}
                   />
-
                 </View>
               </TouchableOpacity>
             );
@@ -145,7 +138,6 @@ export default function BottomNavigator({ state, descriptors, navigation }) {
         </View>
       </View>
     </View>
-
   );
 }
 
