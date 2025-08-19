@@ -1,28 +1,98 @@
-import { View, Text, ScrollView, StyleSheet, Modal, Image, Alert, Pressable, Linking } from 'react-native'
-import React, { useEffect, useState } from 'react'
-import { colors, fonts, windowWidth } from '../../utils'
-import { MyButton, MyHeader } from '../../components'
+import {
+  View,
+  Text,
+  ScrollView,
+  StyleSheet,
+  Modal,
+  Image,
+  Alert,
+  Pressable,
+  Linking,
+} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {colors, fonts, windowWidth} from '../../utils';
+import {MyButton, MyHeader} from '../../components';
 import axios from 'axios';
-import { apiURL, MYAPP, webURL } from '../../utils/localStorage';
+import {apiURL, MYAPP, webURL} from '../../utils/localStorage';
 import RenderHTML from 'react-native-render-html';
-import { showMessage } from 'react-native-flash-message';
+import {showMessage} from 'react-native-flash-message';
 import moment from 'moment';
 import RNHTMLtoPDF from 'react-native-html-to-pdf';
 import RNFS from 'react-native-fs';
 import Share from 'react-native-share';
-import { TouchableOpacity } from 'react-native';
+import {TouchableOpacity} from 'react-native';
+import {Platform} from 'react-native';
 
+export default function KunjunganDetail({navigation, route}) {
+  const item = route.params;
+  console.log(item);
+  const [modalVisible, setModalVisible] = useState(false); // State untuk modal
 
-export default function KunjunganDetail({ navigation, route }) {
-    const item = route.params;
-    console.log(item);
-    const [modalVisible, setModalVisible] = useState(false); // State untuk modal
+  const createPDF = async () => {
+    try {
+      // Meminta izin penyimpanan berdasarkan versi Android
+      if (Platform.OS === 'android') {
+        if (Platform.Version >= 33) {
+          // Android 13+ menggunakan scoped storage, tidak perlu izin khusus untuk direktori Download
+          console.log('Android 13+: Menggunakan scoped storage');
+        } else if (Platform.Version >= 30) {
+          // Android 11-12: Periksa akses ke direktori Download
+          const hasPermission = await PermissionsAndroid.check(
+            PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+          );
+          if (!hasPermission) {
+            // Untuk Android 11+, gunakan MediaStore atau Documents API
+            Alert.alert(
+              'Info',
+              'File akan disimpan dalam folder aplikasi yang dapat diakses.',
+            );
+          }
+        } else {
+          // Android 10 ke bawah
+          const granted = await PermissionsAndroid.request(
+            PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+          );
+          if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
+            Alert.alert(
+              'Izin Diperlukan',
+              'Aplikasi memerlukan izin untuk menyimpan file.',
+            );
+            return;
+          }
+        }
+      }
 
-    const createPDF = async () => {
+      // Sanitize filename untuk menghindari karakter yang tidak valid
+      const sanitizeFilename = filename => {
+        return filename
+          ? filename.replace(/[<>:"/\\|?*]/g, '_').replace(/\s+/g, '_')
+          : 'komunitas_belajar';
+      };
 
+      // Tentukan nama file dan direktori berdasarkan versi Android
+      const timestamp = new Date().getTime();
+      const baseFileName = sanitizeFilename(item.judul || 'komunitas_belajar');
+      const fileName = `${baseFileName}_${timestamp}`;
 
-        let options = {
-            html: `<!DOCTYPE html>
+      // Tentukan direktori penyimpanan
+      let directory;
+      if (Platform.OS === 'android') {
+        if (Platform.Version >= 34) {
+          // Android 14+ - gunakan direktori Documents
+          directory = 'Documents';
+        } else if (Platform.Version >= 30) {
+          // Android 11-13 - gunakan Documents sebagai alternatif yang aman
+          directory = 'Documents';
+        } else {
+          // Android 10 ke bawah
+          directory = 'Download';
+        }
+      } else {
+        directory = 'Download';
+      }
+
+      let options = {
+        html: `<!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
@@ -111,203 +181,385 @@ export default function KunjunganDetail({ navigation, route }) {
 </body>
 </html>
 `,
-            fileName: item.judul,
-            directory: RNFS.DownloadDirectoryPath,
-        };
+        fileName: item.judul,
+        directory: RNFS.DownloadDirectoryPath,
+      };
 
-        let file = await RNHTMLtoPDF.convert(options)
-        await Share.open({
-            url: `file://${file.filePath}`,
+      let file = await RNHTMLtoPDF.convert(options);
+
+      if (file.filePath) {
+        console.log('PDF berhasil dibuat:', file.filePath);
+
+        // Pesan yang lebih informatif berdasarkan lokasi penyimpanan
+        const locationMessage =
+          Platform.OS === 'android' && Platform.Version >= 30
+            ? 'PDF berhasil dibuat dan tersimpan di folder Documents'
+            : `PDF berhasil dibuat: ${file.filePath}`;
+
+        Alert.alert('Sukses', locationMessage);
+
+        try {
+          // Bagikan file setelah dibuat
+          await Share.open({
+            url:
+              Platform.OS === 'android'
+                ? `file://${file.filePath}`
+                : file.filePath,
             type: 'application/pdf',
             failOnCancel: false,
-        });
-        console.log(file.filePath);
-        alert(file.filePath);
+          });
+        } catch (shareError) {
+          console.log('Error sharing file:', shareError);
+          // Jika sharing gagal, setidaknya file sudah tersimpan
+          Alert.alert(
+            'Info',
+            'PDF berhasil disimpan, namun gagal membagikan file.',
+          );
+        }
+      } else {
+        Alert.alert('Gagal', 'Gagal membuat PDF.');
+      }
+    } catch (error) {
+      console.error('Error creating PDF:', error);
+
+      // Error handling yang lebih spesifik
+      if (error.message && error.message.includes('permission')) {
+        Alert.alert(
+          'Error',
+          'Tidak memiliki izin untuk menyimpan file. Coba lagi atau periksa pengaturan aplikasi.',
+        );
+      } else if (error.message && error.message.includes('storage')) {
+        Alert.alert(
+          'Error',
+          'Tidak cukup ruang penyimpanan atau direktori tidak dapat diakses.',
+        );
+      } else if (error.message && error.message.includes('filename')) {
+        Alert.alert(
+          'Error',
+          'Nama file tidak valid. Menggunakan nama default.',
+        );
+      } else {
+        Alert.alert(
+          'Error',
+          'Terjadi kesalahan saat membuat atau membagikan PDF.',
+        );
+      }
     }
+  };
 
-
-    return (
-        <View style={{
-            flex: 1,
-            backgroundColor: colors.white
-        }}>
-            <MyHeader title="Kunjungan Detail" />
-            <ScrollView>
-                <View style={{
-                    margin: 10,
-                    padding: 15,
-                    backgroundColor: colors.white,
-                    borderRadius: 10,
-                    borderWidth: 1,
-                    borderColor: colors.border,
-                    shadowColor: '#000',
-                    shadowOffset: { width: 0, height: 2 },
-                    shadowOpacity: 0.1,
-                    shadowRadius: 4,
-                    elevation: 3,
-                    marginBottom: 20,
-                }}>
-
-                    <Text style={{ fontFamily: fonts.primary[600], fontSize: 10, color: '#C9C5C8', marginBottom: 10 }}>
-                        {moment(item.tanggal).format('DD MMMM YYYY')}
-                    </Text>
-
-                    <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 5, }}>
-                        <Text style={{ flex: 1, fontFamily: fonts.primary[500], fontSize: 10, color: colors.text, width: '40%' }}>
-                            Nama Satuan Pendidikan
-                        </Text>
-                        <Text style={{
-                            flex: 0.1,
-                            fontFamily: fonts.primary[500], fontSize: 10, color: colors.primary
-                        }}>:</Text>
-                        <Text style={{ flex: 1, fontFamily: fonts.primary[500], fontSize: 10, color: colors.primary }}>
-                            {item.satuan}
-                        </Text>
-                    </View>
-
-
-
-                    <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 5, }}>
-                        <Text style={{ flex: 1, fontFamily: fonts.primary[500], fontSize: 10, color: colors.text, width: '40%' }}>
-                            Waktu Kunjungan
-                        </Text>
-                        <Text style={{
-                            flex: 0.1,
-                            fontFamily: fonts.primary[500], fontSize: 10, color: colors.primary
-                        }}>:</Text>
-                        <Text style={{ flex: 1, fontFamily: fonts.primary[500], fontSize: 10, color: colors.primary }}>
-                            {item.tanggal}
-                        </Text>
-                    </View>
-
-                    <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 5, }}>
-                        <Text style={{ flex: 1, fontFamily: fonts.primary[500], fontSize: 10, color: colors.text, width: '40%' }}>
-                            Tujuan Kunjungan
-                        </Text>
-                        <Text style={{
-                            flex: 0.1,
-                            fontFamily: fonts.primary[500], fontSize: 10, color: colors.primary
-                        }}>:</Text>
-                        <Text style={{ flex: 1, fontFamily: fonts.primary[500], fontSize: 10, color: colors.primary }}>
-                            {item.tujuan}
-                        </Text>
-                    </View>
-
-                    <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 5, }}>
-                        <Text style={{ flex: 1, fontFamily: fonts.primary[500], fontSize: 10, color: colors.text, width: '40%' }}>
-                            Catatan
-                        </Text>
-                        <Text style={{
-                            flex: 0.1,
-                            fontFamily: fonts.primary[500], fontSize: 10, color: colors.primary
-                        }}>:</Text>
-                        <Text style={{ flex: 1, fontFamily: fonts.primary[500], fontSize: 10, color: colors.primary }}>
-                            {item.catatan}
-                        </Text>
-                    </View>
-
-                    <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 5, }}>
-                        <Text style={{ flex: 1, fontFamily: fonts.primary[500], fontSize: 10, color: colors.text, width: '40%' }}>
-                            Dokumentasi
-                        </Text>
-
-                    </View>
-
-                    <TouchableOpacity onPress={() => setModalVisible(true)}>
-                        <Image source={{
-                            uri: webURL + item.gambar
-                        }} style={{
-                            width: windowWidth - 50,
-                            borderRadius: 5,
-                            height: 200,
-                        }} />
-                    </TouchableOpacity>
-                    <MyButton title="Download PDF" warna={colors.danger} onPress={createPDF} />
-
-
-                </View>
-            </ScrollView>
-            <View style={{
-                padding: 10,
-                flexDirection: 'row'
+  return (
+    <View
+      style={{
+        flex: 1,
+        backgroundColor: colors.white,
+      }}>
+      <MyHeader title="Kunjungan Detail" />
+      <ScrollView>
+        <View
+          style={{
+            margin: 10,
+            padding: 15,
+            backgroundColor: colors.white,
+            borderRadius: 10,
+            borderWidth: 1,
+            borderColor: colors.border,
+            shadowColor: '#000',
+            shadowOffset: {width: 0, height: 2},
+            shadowOpacity: 0.1,
+            shadowRadius: 4,
+            elevation: 3,
+            marginBottom: 20,
+          }}>
+          <Text
+            style={{
+              fontFamily: fonts.primary[600],
+              fontSize: 10,
+              color: '#C9C5C8',
+              marginBottom: 10,
             }}>
-                <View style={{
-                    flex: 1
-                }}>
-                    <MyButton title="Edit" onPress={() => navigation.navigate('ShowWeb', {
-                        link: webURL + 'kunjungan/edit/' + item.id_kunjungan,
-                        judul: 'Edit Kunjungan'
-                    })} />
-                </View>
-                <View style={{
-                    flex: 1
-                }}>
-                    <MyButton title="Hapus" onPress={() => Alert.alert(MYAPP, 'Apakah kamu yakin akan hapus ini ?', [
-                        {
-                            text: 'TIDAK'
-                        },
-                        {
-                            text: 'HAPUS',
-                            onPress: () => {
-                                axios.post(apiURL + 'delete_data', {
-                                    modul: 'kunjungan',
-                                    id: item.id_kunjungan,
-                                }).then(res => {
-                                    if (res.data.status == 200) {
-                                        showMessage({
-                                            type: 'success',
-                                            message: res.data.message
-                                        });
-                                        navigation.goBack();
-                                    }
-                                    console.log(res.data);
-                                })
-                            }
-                        }
-                    ])} warna={colors.danger} />
-                </View>
-            </View>
-            <Modal visible={modalVisible} transparent={true}>
-                <View style={styles.modalContainer}>
-                    <TouchableOpacity style={styles.modalClose} onPress={() => setModalVisible(false)}>
-                        <Text style={styles.closeText}>✕</Text>
-                    </TouchableOpacity>
-                    <Image
-                        style={styles.fullImage}
-                        source={{ uri: webURL + item.gambar }}
-                        resizeMode="contain"
-                    />
-                </View>
-            </Modal>
+            {moment(item.tanggal).format('DD MMMM YYYY')}
+          </Text>
+
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              marginBottom: 5,
+            }}>
+            <Text
+              style={{
+                flex: 1,
+                fontFamily: fonts.primary[500],
+                fontSize: 10,
+                color: colors.text,
+                width: '40%',
+              }}>
+              Nama Satuan Pendidikan
+            </Text>
+            <Text
+              style={{
+                flex: 0.1,
+                fontFamily: fonts.primary[500],
+                fontSize: 10,
+                color: colors.primary,
+              }}>
+              :
+            </Text>
+            <Text
+              style={{
+                flex: 1,
+                fontFamily: fonts.primary[500],
+                fontSize: 10,
+                color: colors.primary,
+              }}>
+              {item.satuan}
+            </Text>
+          </View>
+
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              marginBottom: 5,
+            }}>
+            <Text
+              style={{
+                flex: 1,
+                fontFamily: fonts.primary[500],
+                fontSize: 10,
+                color: colors.text,
+                width: '40%',
+              }}>
+              Waktu Kunjungan
+            </Text>
+            <Text
+              style={{
+                flex: 0.1,
+                fontFamily: fonts.primary[500],
+                fontSize: 10,
+                color: colors.primary,
+              }}>
+              :
+            </Text>
+            <Text
+              style={{
+                flex: 1,
+                fontFamily: fonts.primary[500],
+                fontSize: 10,
+                color: colors.primary,
+              }}>
+              {item.tanggal}
+            </Text>
+          </View>
+
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              marginBottom: 5,
+            }}>
+            <Text
+              style={{
+                flex: 1,
+                fontFamily: fonts.primary[500],
+                fontSize: 10,
+                color: colors.text,
+                width: '40%',
+              }}>
+              Tujuan Kunjungan
+            </Text>
+            <Text
+              style={{
+                flex: 0.1,
+                fontFamily: fonts.primary[500],
+                fontSize: 10,
+                color: colors.primary,
+              }}>
+              :
+            </Text>
+            <Text
+              style={{
+                flex: 1,
+                fontFamily: fonts.primary[500],
+                fontSize: 10,
+                color: colors.primary,
+              }}>
+              {item.tujuan}
+            </Text>
+          </View>
+
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              marginBottom: 5,
+            }}>
+            <Text
+              style={{
+                flex: 1,
+                fontFamily: fonts.primary[500],
+                fontSize: 10,
+                color: colors.text,
+                width: '40%',
+              }}>
+              Catatan
+            </Text>
+            <Text
+              style={{
+                flex: 0.1,
+                fontFamily: fonts.primary[500],
+                fontSize: 10,
+                color: colors.primary,
+              }}>
+              :
+            </Text>
+            <Text
+              style={{
+                flex: 1,
+                fontFamily: fonts.primary[500],
+                fontSize: 10,
+                color: colors.primary,
+              }}>
+              {item.catatan}
+            </Text>
+          </View>
+
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              marginBottom: 5,
+            }}>
+            <Text
+              style={{
+                flex: 1,
+                fontFamily: fonts.primary[500],
+                fontSize: 10,
+                color: colors.text,
+                width: '40%',
+              }}>
+              Dokumentasi
+            </Text>
+          </View>
+
+          <TouchableOpacity onPress={() => setModalVisible(true)}>
+            <Image
+              source={{
+                uri: webURL + item.gambar,
+              }}
+              style={{
+                width: windowWidth - 50,
+                borderRadius: 5,
+                height: 200,
+              }}
+            />
+          </TouchableOpacity>
+          <MyButton
+            title="Download PDF"
+            warna={colors.danger}
+            onPress={createPDF}
+          />
         </View>
-    )
+      </ScrollView>
+      <View
+        style={{
+          padding: 10,
+          flexDirection: 'row',
+        }}>
+        <View
+          style={{
+            flex: 1,
+          }}>
+          <MyButton
+            title="Edit"
+            onPress={() =>
+              navigation.navigate('ShowWeb', {
+                link: webURL + 'kunjungan/edit/' + item.id_kunjungan,
+                judul: 'Edit Kunjungan',
+              })
+            }
+          />
+        </View>
+        <View
+          style={{
+            flex: 1,
+          }}>
+          <MyButton
+            title="Hapus"
+            onPress={() =>
+              Alert.alert(MYAPP, 'Apakah kamu yakin akan hapus ini ?', [
+                {
+                  text: 'TIDAK',
+                },
+                {
+                  text: 'HAPUS',
+                  onPress: () => {
+                    axios
+                      .post(apiURL + 'delete_data', {
+                        modul: 'kunjungan',
+                        id: item.id_kunjungan,
+                      })
+                      .then(res => {
+                        if (res.data.status == 200) {
+                          showMessage({
+                            type: 'success',
+                            message: res.data.message,
+                          });
+                          navigation.goBack();
+                        }
+                        console.log(res.data);
+                      });
+                  },
+                },
+              ])
+            }
+            warna={colors.danger}
+          />
+        </View>
+      </View>
+      <Modal visible={modalVisible} transparent={true}>
+        <View style={styles.modalContainer}>
+          <TouchableOpacity
+            style={styles.modalClose}
+            onPress={() => setModalVisible(false)}>
+            <Text style={styles.closeText}>✕</Text>
+          </TouchableOpacity>
+          <Image
+            style={styles.fullImage}
+            source={{uri: webURL + item.gambar}}
+            resizeMode="contain"
+          />
+        </View>
+      </Modal>
+    </View>
+  );
 }
 const styles = StyleSheet.create({
-    modalContainer: {
-        flex: 1,
-        backgroundColor: 'rgba(0,0,0,0.9)',
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    modalClose: {
-        position: 'absolute',
-        top: 40,
-        right: 20,
-        backgroundColor: 'rgba(255,255,255,0.8)',
-        width: 40,
-        height: 40,
-        borderRadius: 20,
-        justifyContent: 'center',
-        alignItems: 'center'
-    },
-    closeText: {
-        fontSize: 20,
-        color: 'black',
-        fontWeight: 'bold',
-    },
-    fullImage: {
-        width: '90%',
-        height: '80%',
-        resizeMode: 'contain'
-    },
+  modalContainer: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.9)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalClose: {
+    position: 'absolute',
+    top: 40,
+    right: 20,
+    backgroundColor: 'rgba(255,255,255,0.8)',
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  closeText: {
+    fontSize: 20,
+    color: 'black',
+    fontWeight: 'bold',
+  },
+  fullImage: {
+    width: '90%',
+    height: '80%',
+    resizeMode: 'contain',
+  },
 });
