@@ -14,7 +14,12 @@ import axios from 'axios';
 import {useIsFocused} from '@react-navigation/native';
 import {fonts} from '../../utils';
 
-export default function BottomNavigator({state, descriptors, navigation}) {
+export default function BottomNavigator({
+  state,
+  descriptors,
+  navigation,
+  tinggi = 50,
+}) {
   const focusedOptions = descriptors[state.routes[state.index].key].options;
   const [cart, setCart] = useState(0);
   const isFocused = useIsFocused();
@@ -49,7 +54,7 @@ export default function BottomNavigator({state, descriptors, navigation}) {
             flexDirection: 'row',
 
             borderTopColor: Color.blueGray[100],
-            height: 50,
+            height: 80,
             // borderRadius: 50,
           }}>
           {state.routes.map((route, index) => {

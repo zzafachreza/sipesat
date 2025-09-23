@@ -15,7 +15,7 @@ export default function PengawasBottomNavigator({
           style={{
             backgroundColor: colors.white,
             flexDirection: 'row',
-            height: 50,
+            height: 80,
             borderRadius: 50,
             zIndex: 1, // Pastikan navigator di atas komponen lain
           }}>

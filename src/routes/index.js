@@ -1,6 +1,6 @@
-import React from 'react';
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
-import { createStackNavigator } from '@react-navigation/stack';
+import React, {useEffect} from 'react';
+import {StyleSheet, Text, View, TouchableOpacity, Platform} from 'react-native';
+import {createStackNavigator} from '@react-navigation/stack';
 import {
   Splash,
   Home,
@@ -90,64 +90,100 @@ import {
   MeetingDetail,
   KunjunganDetail,
   AgendaDetail,
-
-
-
 } from '../pages';
-import { colors } from '../utils';
-import { Icon } from 'react-native-elements';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { BottomNavigator, GuruBottomNavigator, PengawasBottomNavigator } from '../components';
+import {colors} from '../utils';
+import {Icon} from 'react-native-elements';
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import {
+  BottomNavigator,
+  GuruBottomNavigator,
+  PengawasBottomNavigator,
+} from '../components';
 import HomeGuru from '../pages/HomeGuru';
 import PendampinganKomunitas from '../pages/Menu/pendemping';
 import PedampinganDetail from '../pages/Menu/pendampingdetail';
 import Pengumuman from '../pages/Menu/pengumuman';
-
-
+import {showNavigationBar} from 'react-native-navigation-bar-color';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 
 const Tab = createBottomTabNavigator();
 
 const Stack = createStackNavigator();
 
+const getNavigationBarHeight = async () => {
+  const height = await NavigationBar.getNavigationBarHeight();
+  return height;
+};
+
 const MainApp = () => {
+  const insets = useSafeAreaInsets();
+  console.log(insets);
   return (
-    <Tab.Navigator initialRouteName='Splash' tabBar={props => <BottomNavigator {...props} />}>
+    <Tab.Navigator
+      screenOptions={{
+        headerShown: false,
+        tabBarStyle: {
+          height: 60 + insets.bottom, // kasih tambahan tinggi sesuai safe area
+          paddingBottom: insets.bottom, // biar icon/tab gak ketutup
+          paddingTop: 8,
+        },
+      }}
+      initialRouteName="Splash"
+      tabBar={props => <BottomNavigator {...props} />}>
       <Tab.Screen name="Home" component={Home} />
       <Tab.Screen name="Profile" component={Account} />
-
     </Tab.Navigator>
   );
 };
 
 const GuruMainApp = () => {
+  const insets = useSafeAreaInsets();
+
   return (
-    <Tab.Navigator initialRouteName='HomeGuru' tabBar={props => <GuruBottomNavigator {...props} />}>
+    <Tab.Navigator
+      screenOptions={{
+        headerShown: false,
+        tabBarStyle: {
+          height: 60 + insets.bottom, // kasih tambahan tinggi sesuai safe area
+          paddingBottom: insets.bottom, // biar icon/tab gak ketutup
+          paddingTop: 8,
+        },
+      }}
+      initialRouteName="HomeGuru"
+      tabBar={props => <GuruBottomNavigator {...props} />}>
       <Tab.Screen name="Home" component={Home} />
       <Tab.Screen name="HomeGuru" component={HomeGuru} />
       <Tab.Screen name="TanyaPengawas" component={TanyaPengawas} />
       <Tab.Screen name="Profile" component={Account} />
-
     </Tab.Navigator>
   );
 };
 
 const PengawasMainApp = () => {
+  const insets = useSafeAreaInsets();
+
   return (
-    <Tab.Navigator initialRouteName='HomePengawas' tabBar={props => <PengawasBottomNavigator {...props} />}>
+    <Tab.Navigator
+      screenOptions={{
+        headerShown: false,
+        tabBarStyle: {
+          height: 60 + insets.bottom, // kasih tambahan tinggi sesuai safe area
+          paddingBottom: insets.bottom, // biar icon/tab gak ketutup
+          paddingTop: 8,
+        },
+      }}
+      initialRouteName="HomePengawas"
+      tabBar={props => <PengawasBottomNavigator {...props} />}>
       <Tab.Screen name="Home" component={Home} />
       <Tab.Screen name="HomePengawas" component={HomePengawas} />
       <Tab.Screen name="Profile" component={Account} />
-
     </Tab.Navigator>
   );
 };
 
-
-
-
 export default function Router() {
   return (
-    <Stack.Navigator initialRouteName='Splash'>
+    <Stack.Navigator initialRouteName="Splash">
       <Stack.Screen
         name="Splash"
         component={Splash}
@@ -209,7 +245,6 @@ export default function Router() {
         component={MeetingPengawas}
         options={{
           headerShown: false,
-
         }}
       />
 
@@ -218,20 +253,14 @@ export default function Router() {
         component={TambahMeeting}
         options={{
           headerShown: false,
-
         }}
       />
-
-
-
-
 
       <Stack.Screen
         name="GuruMainApp"
         component={GuruMainApp}
         options={{
           headerShown: false,
-
         }}
       />
 
@@ -240,7 +269,6 @@ export default function Router() {
         component={BukuKunjungan}
         options={{
           headerShown: false,
-
         }}
       />
 
@@ -249,42 +277,30 @@ export default function Router() {
         component={TambahBukuKunjungan}
         options={{
           headerShown: false,
-
         }}
       />
-
-
-
 
       <Stack.Screen
         name="PengawasMainApp"
         component={PengawasMainApp}
         options={{
           headerShown: false,
-
         }}
       />
-
-
-
-
 
       <Stack.Screen
         name="Account"
         component={Account}
         options={{
           headerShown: false,
-
         }}
       />
-
 
       <Stack.Screen
         name="InfoAplikasi"
         component={InfoAplikasi}
         options={{
           headerShown: false,
-
         }}
       />
 
@@ -293,17 +309,14 @@ export default function Router() {
         component={Materi}
         options={{
           headerShown: false,
-
         }}
       />
-
 
       <Stack.Screen
         name="Regulasi"
         component={Regulasi}
         options={{
           headerShown: false,
-
         }}
       />
 
@@ -312,17 +325,14 @@ export default function Router() {
         component={ProfilPengawas}
         options={{
           headerShown: false,
-
         }}
       />
-
 
       <Stack.Screen
         name="Diskusi"
         component={Diskusi}
         options={{
           headerShown: false,
-
         }}
       />
 
@@ -331,37 +341,30 @@ export default function Router() {
         component={PilihPengawas}
         options={{
           headerShown: false,
-
         }}
       />
-
 
       <Stack.Screen
         name="AgendaPengawas"
         component={AgendaPengawas}
         options={{
           headerShown: false,
-
         }}
       />
-
 
       <Stack.Screen
         name="PedampinganKomunitas"
         component={PendampinganKomunitas}
         options={{
           headerShown: false,
-
         }}
       />
-
 
       <Stack.Screen
         name="Meeting"
         component={Meeting}
         options={{
           headerShown: false,
-
         }}
       />
 
@@ -370,41 +373,30 @@ export default function Router() {
         component={Pengumuman}
         options={{
           headerShown: false,
-
         }}
       />
-
 
       <Stack.Screen
         name="PengumumanDetail"
         component={PengumumanDetail}
         options={{
           headerShown: false,
-
         }}
       />
-
-
-
-
-
 
       <Stack.Screen
         name="PedampinganDetail"
         component={PedampinganDetail}
         options={{
           headerShown: false,
-
         }}
       />
-
 
       <Stack.Screen
         name="TanyaPengawas"
         component={TanyaPengawas}
         options={{
           headerShown: false,
-
         }}
       />
 
@@ -413,21 +405,14 @@ export default function Router() {
         component={ProfileGuru}
         options={{
           headerShown: false,
-
         }}
       />
-
-
-
-
-
 
       <Stack.Screen
         name="Login"
         component={Login}
         options={{
           headerShown: false,
-
         }}
       />
 
@@ -436,7 +421,6 @@ export default function Router() {
         component={CheckHargaStock}
         options={{
           headerShown: false,
-
         }}
       />
 
@@ -445,33 +429,24 @@ export default function Router() {
         component={Register}
         options={{
           headerShown: false,
-
         }}
       />
-
 
       <Stack.Screen
         name="KalkulatorKompos"
         component={KalkulatorKompos}
         options={{
           headerShown: false,
-
         }}
       />
-
 
       <Stack.Screen
         name="Petunjuk"
         component={Petunjuk}
         options={{
           headerShown: false,
-
         }}
       />
-
-
-
-
 
       <Stack.Screen
         name="AccountEdit"
@@ -486,7 +461,6 @@ export default function Router() {
         }}
       />
 
-
       <Stack.Screen
         name="MainApp"
         component={MainApp}
@@ -494,22 +468,6 @@ export default function Router() {
           headerShown: false,
         }}
       />
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     </Stack.Navigator>
   );
 }
