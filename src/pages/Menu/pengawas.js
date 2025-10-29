@@ -238,7 +238,7 @@ export default function ProfilPengawas({navigation}) {
                         flexShrink: 1,
                         flexWrap: 'wrap',
                       }}>
-                      rdfirmansyah@gmail.com
+                      {item.email}
                     </Text>
                   </View>
                 </View>

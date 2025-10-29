@@ -71,7 +71,7 @@ export default function PedampinganDetail({navigation, route}) {
 
       // Tentukan nama file dan direktori berdasarkan versi Android
       const timestamp = new Date().getTime();
-      const baseFileName = sanitizeFilename(item.judul || 'komunitas_belajar');
+      const baseFileName = sanitizeFilename(item.nama || 'komunitas_belajar');
       const fileName = `${baseFileName}_${timestamp}`;
 
       // Tentukan direktori penyimpanan
@@ -273,7 +273,7 @@ export default function PedampinganDetail({navigation, route}) {
         flex: 1,
         backgroundColor: colors.white,
       }}>
-      <MyHeader title="Pendampingan Komunitas Belajar Detail" />
+      <MyHeader title={item.nama} />
       <ScrollView>
         <View
           style={{
