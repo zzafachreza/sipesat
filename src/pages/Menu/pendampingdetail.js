@@ -158,7 +158,7 @@ export default function PedampinganDetail({navigation, route}) {
         </p>
         
         <div class="row">
-            <p class="label">Nama Komunitas Belajar</p>
+            <p class="label">Nama Komunitas Belajar</p>
             <p class="separator">:</p>
             <p class="value">${item.nama || '-'}</p>
         </div>
@@ -314,7 +314,7 @@ export default function PedampinganDetail({navigation, route}) {
                 color: colors.text,
                 width: '40%',
               }}>
-              Nama Satuan Pendidikan
+              Nama Komunitas Belajar
             </Text>
             <Text
               style={{

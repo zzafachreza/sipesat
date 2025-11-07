@@ -319,6 +319,16 @@ export default function PilihPengawas({navigation, route}) {
                       Decline
                     </Text>
                   )}
+
+                  {item.status2 == 0 &&
+                    item.status == 0 &&
+                    data.filter(i => i.jumlah > 0 && i.status > 0).length ==
+                      0 && (
+                      <MyButton
+                        onPress={() => CekPengawas(item.id_pengguna)}
+                        title="Pilih"
+                      />
+                    )}
                 </View>
               </View>
             </View>

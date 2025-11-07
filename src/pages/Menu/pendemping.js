@@ -142,7 +142,7 @@ export default function Pendampingan({navigation, route}) {
                     </p>
                     
                     <div class="row">
-                        <p class="label">Nama Satuan Pendidikan</p>
+                        <p class="label">Nama Komunitas Belajar</p>
                         <p class="separator">:</p>
                         <p class="value">${item.nama || '-'}</p>
                     </div>
